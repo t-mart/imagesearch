@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "imagesearch"
+version = "0.1.0"
+description = "Find images similar to a reference image."
+authors = ["Tim Martin <tim@timmart.in>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+imagehash = "^4.1.0"
+attrs = "^19.3.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pylint = "^2.5.3"
+black = "^19.10b0"
+mypy = "^0.782"
+autopep8 = "^1.5.4"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+imagesearch = 'imagesearch.__main__:main'
