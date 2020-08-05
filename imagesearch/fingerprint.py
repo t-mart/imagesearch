@@ -74,6 +74,7 @@ class Algorithm(Enum):
 
     @classmethod
     def algo_names(cls) -> List[str]:
+        """Return a list of all the algorithm names."""
         return [algo.algo_name for algo in list(Algorithm)]
 
     def __init__(
