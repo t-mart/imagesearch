@@ -18,7 +18,7 @@ def test_compares_all_files() -> None:
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[TEST_IMAGE_DIR],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=None
     ))
@@ -30,7 +30,7 @@ def test_threshold() -> None:
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[TEST_IMAGE_DIR],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=threshold
     ))
@@ -42,7 +42,7 @@ def test_stop_on_first_match() -> None:
     no_threshold_results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[TEST_IMAGE_DIR],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=None
     ))
@@ -51,7 +51,7 @@ def test_stop_on_first_match() -> None:
     with_threshold_results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[TEST_IMAGE_DIR],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=True,
         threshold=biggest_diff
     ))
@@ -63,7 +63,7 @@ def test_multiple_search_dirs() -> None:
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[TEST_IMAGE_SUBDIR_1_0, TEST_IMAGE_SUBDIR_1_1],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=None
     ))
@@ -76,7 +76,7 @@ def test_duplicate_search_dirs() -> None:
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[TEST_IMAGE_DIR, TEST_IMAGE_DIR],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=None
     ))
@@ -87,7 +87,7 @@ def test_search_file() -> None:
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[REF_IMAGE],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=None
     ))
@@ -98,7 +98,7 @@ def test_search_dir_and_file() -> None:
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[REF_IMAGE, TEST_IMAGE_SUBDIR_1_0],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=None
     ))
@@ -112,7 +112,7 @@ def test_search_dir_and_file_within_dir() -> None:
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[REF_IMAGE, TEST_IMAGE_DIR],
-        algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+        algorithm=imagesearch.Algorithm.DHASH,
         stop_on_first_match=False,
         threshold=None
     ))
@@ -124,7 +124,7 @@ def test_unsupported_ref_image() -> None:
         list(imagesearch.search(
             ref_path=UNSUPPORTED_IMAGE,
             search_paths=[TEST_IMAGE_DIR],
-            algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+            algorithm=imagesearch.Algorithm.DHASH,
             stop_on_first_match=False,
             threshold=None
         ))
@@ -135,7 +135,7 @@ def test_unsupported_explicit_search_file() -> None:
         list(imagesearch.search(
             ref_path=REF_IMAGE,
             search_paths=[UNSUPPORTED_IMAGE],
-            algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+            algorithm=imagesearch.Algorithm.DHASH,
             stop_on_first_match=False,
             threshold=None
         ))
@@ -146,7 +146,7 @@ def test_non_existant_ref_image() -> None:
         list(imagesearch.search(
             ref_path=NON_EXISTANT_FILE,
             search_paths=[TEST_IMAGE_DIR],
-            algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+            algorithm=imagesearch.Algorithm.DHASH,
             stop_on_first_match=False,
             threshold=None
         ))
@@ -157,7 +157,7 @@ def test_non_existant_search_path() -> None:
         list(imagesearch.search(
             ref_path=REF_IMAGE,
             search_paths=[NON_EXISTANT_FILE],
-            algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+            algorithm=imagesearch.Algorithm.DHASH,
             stop_on_first_match=False,
             threshold=None
         ))
@@ -168,7 +168,7 @@ def test_invalid_threshold() -> None:
         list(imagesearch.search(
             ref_path=REF_IMAGE,
             search_paths=[REF_IMAGE],
-            algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+            algorithm=imagesearch.Algorithm.DHASH,
             stop_on_first_match=False,
             threshold=-1
         ))
@@ -180,7 +180,7 @@ def test_stop_on_first_match_without_threshold() -> None:
         list(imagesearch.search(
             ref_path=REF_IMAGE,
             search_paths=[REF_IMAGE],
-            algorithm=imagesearch.Algorithm.PHASH_SIMPLE,
+            algorithm=imagesearch.Algorithm.DHASH,
             stop_on_first_match=True,
             threshold=None
         ))
