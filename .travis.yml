@@ -1,0 +1,16 @@
+language: python
+python:
+    - "3.8"
+
+before_install:
+    - pip install poetry
+install:
+    - poetry install
+
+script:
+    - poetry run pytest
+
+before_deploy:
+    - poetry config pypi-token.pypi $PYPI_PASSWORD
+deploy:
+    - poetry publish --build
