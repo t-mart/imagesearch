@@ -1,6 +1,6 @@
 # imagesearch
 
-`imagesearch` returns a "measure of visual similarity" between a reference image and a set of other
+`imagesearch` measures visual similiarity between a reference image and a set of other
 images. This can be used to search for a similar image in a large/deep directory structure.
 
 ## Installation
@@ -51,19 +51,19 @@ images. This can be used to search for a similar image in a large/deep directory
         > imagesearch --help
         ...
 
-## Measure of Visual Similiarity
+## Visual Similiarity
 
 `imagesearch` returns a nonnegative integer that quantifies the visual similarity between the
 reference image and another image. It does this by creating an image fingerprint and looking at the
 difference between them.
 
-A critical feature of these fingerprints is that they can be numerically compared, and big
-differences will produce large values, and vice versa.
+A critical feature of these fingerprints is that they can be numerically compared (by Hamming Distance).
+Images that are different will have large differences in their fingerprints, and vice versa
 
 **A `0` value indicates the highest level of similarity, or possibly a true match.**
 
 Values should be treated as opaque and relative. It is dependent on the algorithm
-used to create the fingerprints and your subjective criteria for a similar image.
+used to create the fingerprints and your subjective criteria for what "similar" is.
 
 This project uses the
 [imagehash](https://github.com/JohannesBuchner/imagehash) library to produce these fingerprints, and

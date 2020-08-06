@@ -1,0 +1,6 @@
+.mypy_cache
+.pytest_cache
+*.egg-info
+dist/
+.coverage
+htmlcov

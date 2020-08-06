@@ -8,10 +8,11 @@ from pathlib import Path
 import attr
 
 from .fingerprint import Algorithm
+from . import __version__
 
 
 @attr.s(frozen=True, auto_attribs=True, order=False, kw_only=True)
-class _Config:
+class Config:
     """Holds configuration parameters."""
 
     ref_path: Path
@@ -21,13 +22,20 @@ class _Config:
     threshold: Optional[int]
 
     @classmethod
-    def from_args(cls: Type[_Config]) -> _Config:
+    def from_args(cls: Type[Config], args: Optional[List[str]] = None) -> Config:
         """Generate a _Config from command line arguments."""
         parser = argparse.ArgumentParser(
+            prog="imagesearch",
             description=(
                 "Returns the similiarity between a reference image and a set of other images."
             ),
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        )
+
+        parser.add_argument(
+            '--version',
+            action='version',
+            version=__version__
         )
 
         parser.add_argument(
@@ -83,20 +91,21 @@ class _Config:
             help=(
                 'The the maximum difference at which to consider 2 images as a match. Lower '
                 'numbers mean closer match. This value is subjective and depends on the hash '
-                'algorithm used, so testing without a threshold may be useful to understand the '
-                'range of values. Omit to use an infinite threshold.'
+                'algorithm used, so testing without a threshold may be useful to feel for the '
+                'values. Omit to use an infinite threshold.'
             )
         )
 
-        args = parser.parse_args()
+        parsed_args = parser.parse_args(args=args)
 
         return cls(
-            ref_path=args.ref_path,
-            search_paths=args.search_path,
-            algorithm=args.algorithm,
-            stop_on_first_match=args.stop_on_first_match,
-            threshold=args.threshold,
+            ref_path=parsed_args.ref_path,
+            search_paths=parsed_args.search_path,
+            algorithm=parsed_args.algorithm,
+            stop_on_first_match=parsed_args.stop_on_first_match,
+            threshold=parsed_args.threshold,
         )
 
-
-CONFIG = _Config.from_args()
+def get_config(args: Optional[List[str]] = None) -> Config:
+    """Returns the configuration"""
+    return Config.from_args(args)
