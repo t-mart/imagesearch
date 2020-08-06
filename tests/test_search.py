@@ -6,7 +6,7 @@ import pytest
 import imagesearch
 from imagesearch.search import ImageDiff, SearchPathFile
 
-TEST_IMAGE_DIR = Path('tests/images')
+TEST_IMAGE_DIR = Path(__file__).parent / 'images'
 REF_IMAGE = TEST_IMAGE_DIR / 'en.wikipedia.org-Macaca_nigra_self-portrait_large.jpg'
 UNSUPPORTED_IMAGE = TEST_IMAGE_DIR / 'not-an-image.txt'
 TEST_IMAGE_SUBDIR_0 = TEST_IMAGE_DIR / 'subdir0'
@@ -188,9 +188,9 @@ def test_stop_on_first_match_without_threshold() -> None:
 
 def test_output_line() -> None:
     """Tests the format of the output line."""
-    assert ImageDiff(path=Path('foo'), diff=123).output_line() == f'123\tfoo'
+    assert ImageDiff(path=Path('foo'), diff=123).output_line() == '123\tfoo'
 
-def test_searchFilePath_fs_valid() -> None:
+def test_searchfilepath_fs_valid() -> None:
     """Tests the format of the output line."""
     assert SearchPathFile(path=REF_IMAGE, explicit=True).fs_valid()
     assert not SearchPathFile(path=Path("foo"), explicit=True).fs_valid()
