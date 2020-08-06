@@ -18,6 +18,7 @@ black = "^19.10b0"
 mypy = "^0.782"
 autopep8 = "^1.5.4"
 coverage = "^5.2.1"
+bump2version = "^1.0.0"
 
 [tool.poetry.scripts]
 imagesearch = 'imagesearch.__main__:main'
