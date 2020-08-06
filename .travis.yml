@@ -22,4 +22,8 @@ before_deploy:
     - poetry config pypi-token.pypi $PYPI_PASSWORD
 deploy:
     provider: script
-    script: poetry publish --build --no-interaction
+    script: |
+        bumpversion --verbose patch
+        poetry publish --build --no-interaction
+        git -c user.name='travis' -c user.email='travis@travis-ci.com'
+        git remote add origin-pages https://${GH_TOKEN}@github.com/MVSE-outreach/resources.git > /dev/null 2>&1
