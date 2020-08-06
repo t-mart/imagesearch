@@ -13,7 +13,7 @@ python:
 before_install:
     - pip install poetry
 install:
-    - poetry install
+    - poetry install --no-interaction
 
 script:
     - poetry run pytest
@@ -22,4 +22,4 @@ before_deploy:
     - poetry config pypi-token.pypi $PYPI_PASSWORD
 deploy:
     provider: script
-    script: poetry publish --build
+    script: poetry publish --build --no-interaction
