@@ -68,10 +68,11 @@ def iterate_paths(search_path: Path) -> Generator[SearchPathFile, None, None]:
         children_count = 0
 
         for child_path in search_path.rglob("*"):
-            yield SearchPathFile(
-                path=child_path,
-                explicit=False
-            )
+            if child_path.is_file():
+                yield SearchPathFile(
+                    path=child_path,
+                    explicit=False
+                )
 
         if children_count == 0:
             # warn that there were no valid files in directory
