@@ -16,6 +16,8 @@ NON_EXISTANT_FILE = TEST_IMAGE_DIR / 'does-not-exist'
 
 def test_compares_all_files() -> None:
     """Tests that the directory is recursed"""
+    print(REF_IMAGE)
+    print(TEST_IMAGE_DIR)
     results = list(imagesearch.search(
         ref_path=REF_IMAGE,
         search_paths=[TEST_IMAGE_DIR],
