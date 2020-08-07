@@ -49,7 +49,7 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
         body: |
-          Release of 0.1.5
+          Release of 0.1.6
         # the above line is updated automatically with bumpversion. do not change it.
         draft: false
         prerelease: false
