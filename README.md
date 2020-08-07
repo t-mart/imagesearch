@@ -89,3 +89,14 @@ See
 for examples of **different methods producing the same fingerprint for different images**. These
 are the analog to cryptographic hash collosions, so it's important to understand what kinds of
 scenarios may cause this!
+
+## Contributing
+
+### Bug Fixes/Features
+
+Submit a PR from an appropriately named feature branch off of master.
+
+### Releasing
+
+1. Bump the version with `bumpversion [patch|minor|major]`. This will update the version number around the project, commit and tag it.
+2. Push the repo. A Github release will be made and published to PyPI.
