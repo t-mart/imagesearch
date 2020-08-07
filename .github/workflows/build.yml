@@ -50,6 +50,7 @@ jobs:
         release_name: Release ${{ github.ref }}
         body: |
           Release of 0.1.5
+        # the above line is updated automatically with bumpversion. do not change it.
         draft: false
         prerelease: false
 
