@@ -42,7 +42,7 @@ jobs:
       run: |
         poetry run pytest
 
-    - name: Release tagged commit
+    - name: debug
       run: |
         env
 
