@@ -57,14 +57,12 @@ def iterate_paths(search_path: Path) -> Generator[SearchPathFile, None, None]:
         - directory, then yield all files under that directory that are allowed extensions
     """
     if search_path.is_file():
-        print(f"I think {search_path} is a file.")
         yield SearchPathFile(
             path=search_path,
             explicit=True
         )
 
     elif search_path.is_dir():
-        print(f"I think {search_path} is a dir.")
         children_count = 0
 
         for child_path in search_path.rglob("*"):
