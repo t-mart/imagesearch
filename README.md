@@ -9,6 +9,8 @@ images. This can be used to search for a similar image in a large/deep directory
 
     pip install imagesearch
 
+See [imagesearch on PyPI](https://pypi.org/project/imagesearch/).
+
 ## Examples
 
 - Compare a reference image to all images in a search path:
@@ -64,8 +66,9 @@ Images that are different will have large differences in their fingerprints, and
 
 **A `0` value indicates the highest level of similarity, or possibly a true match.**
 
-Values should be treated as opaque and relative. It is dependent on the algorithm
-used to create the fingerprints and your subjective criteria for what "similar" is.
+Unless you have a good understanding of the algorihms used, values should be treated as
+opaque and subjective. It is dependent on the algorithm
+used to create the fingerprints and your criteria for what "similar" is.
 
 This project uses the
 [imagehash](https://github.com/JohannesBuchner/imagehash) library to produce these fingerprints, and
@@ -73,7 +76,8 @@ more information about the techniques can be found there.
 
 ## Algorithms
 
-All the fingerprinting algorithms in `imagesearch` come from [imagehash](https://github.com/JohannesBuchner/imagehash). In `imagesearch`, you may specify which algorithm to use by passing the appropriate option value to the `-a` or `--algorithm` flag:
+All the fingerprinting algorithms in `imagesearch` come from [imagehash](https://github.com/JohannesBuchner/imagehash). In `imagesearch`, you may specify which algorithm
+to use by passing the appropriate option value to the `-a` or `--algorithm` flag:
 
 - `ahash`: Average hashing (aHash)
 - `phash`: 2-axis perceptual hashing (pHash)
@@ -84,11 +88,20 @@ All the fingerprinting algorithms in `imagesearch` come from [imagehash](https:/
 - `whash-db4`: Daubechies wavelet hashing (wHash)
 - `colorhash`: HSV color hashing (colorhash)
 
+### Collisions
+These algorithms trade away accuracy for speed and size, usually with acceptable results. Instead of producing an artifact that exactly identifies an image, there's analysis
+done on some more abstract quality of the image, such as it's luminance or [signal frequency](https://en.wikipedia.org/wiki/Discrete_cosine_transform). This allows us
+to:
+- do less processing
+- get a fingerprint with a small size
+- get a fingerprint that exists in a linear space for comparison
+
+However, because the exact image analysis is abstract and produces a fixed-size fingerprint, it's absolutely possible for 2 different images to have the same fingerprint.
+This is sort of an analog to cryptographic hash collosions, so it's important to understand what kinds of scenarios may cause this!
+
 See
 [this section of the imagehash documentation](https://github.com/JohannesBuchner/imagehash#example-results)
-for examples of **different methods producing the same fingerprint for different images**. These
-are the analog to cryptographic hash collosions, so it's important to understand what kinds of
-scenarios may cause this!
+for examples of different images that produce thesame fingerprint. The source code of that project also references other pages that explain the qualities of the algorithm.
 
 ## Contributing
 
