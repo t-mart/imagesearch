@@ -1,19 +1,16 @@
-name: imagesearch
+name: Build
 
 on:
   push:
   pull_request:
-  release:
-  schedule:
-    - cron:  '0 0 * * *'
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    steps:
 
-    - name: Checkout
+    steps:
+    - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Set up Python
@@ -41,10 +38,27 @@ jobs:
     - name: Test
       run: |
         poetry run pytest
+      # TODO pytest-cov?
 
-    - name: debug
+    - name: Create GH Release
+      if: startswith(github.ref, 'refs/tags/v')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Release of ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Publish to PyPI
+      if: startswith(github.ref, 'refs/tags/v')
+      env:
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
       run: |
-        env
-        echo ${{ github.ref }}
+        poetry config pypi-token.pypi $PYPI_TOKEN
+        poetry publish --build
 
 
