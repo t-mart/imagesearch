@@ -1,5 +1,7 @@
 # imagesearch
 
+![Build](https://github.com/t-mart/imagesearch/workflows/Build/badge.svg?branch=master)
+
 `imagesearch` measures visual similiarity between a reference image and a set of other
 images. This can be used to search for a similar image in a large/deep directory structure.
 
