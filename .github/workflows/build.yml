@@ -37,8 +37,7 @@ jobs:
 
     - name: Test
       run: |
-        poetry run pytest
-      # TODO pytest-cov?
+        poetry run pytest --cov=imagesearch
 
     - name: Create GH Release
       if: startswith(github.ref, 'refs/tags/v')
