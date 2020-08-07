@@ -21,6 +21,17 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Retrieve cache dependencies
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.cache/pypoetry
+        key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -31,10 +42,8 @@ jobs:
       run: |
         poetry run pytest
 
-    - name: Cut release
+    - name: Release tagged commit
       run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
         env
 
 
