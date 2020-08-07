@@ -63,18 +63,12 @@ def iterate_paths(search_path: Path) -> Generator[SearchPathFile, None, None]:
         )
 
     elif search_path.is_dir():
-        children_count = 0
-
         for child_path in search_path.rglob("*"):
             if child_path.is_file():
                 yield SearchPathFile(
                     path=child_path,
                     explicit=False
                 )
-
-        if children_count == 0:
-            # warn that there were no valid files in directory
-            pass
 
     else:
         raise NotSearchableException(
