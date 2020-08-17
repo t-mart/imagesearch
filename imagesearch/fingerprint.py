@@ -23,45 +23,46 @@ class Algorithm(Enum):
     """
     An enumeration of the algorithms provided by imagehash, along with a name and description.
     """
+
     AHASH = (
-        'ahash',
+        "ahash",
         imagehash.average_hash,
-        'Average hashing'
+        "Average hashing",
     )
     PHASH = (
-        'phash',
+        "phash",
         imagehash.phash,
-        '2-axis perceptual hashing'
+        "2-axis perceptual hashing",
     )
     PHASH_SIMPLE = (
-        'phash-simple',
+        "phash-simple",
         imagehash.phash_simple,
-        '1-axis perceptual hashing'
+        "1-axis perceptual hashing",
     )
     DHASH = (
-        'dhash',
+        "dhash",
         imagehash.dhash,
-        'Horizontal difference hashing'
+        "Horizontal difference hashing",
     )
     DHASH_VERT = (
-        'dhash-vert',
+        "dhash-vert",
         imagehash.dhash_vertical,
-        'Vertical difference hashing'
+        "Vertical difference hashing",
     )
     WHASH_HAAR = (
-        'whash-haar',
+        "whash-haar",
         imagehash.whash,
-        'Haar wavelet hashing'
+        "Haar wavelet hashing",
     )
     WHASH_DB4 = (
-        'whash-db4',
-        lambda img: imagehash.whash(img, mode='db4'),
-        'Daubechies wavelet hashing'
+        "whash-db4",
+        lambda img: imagehash.whash(img, mode="db4"),
+        "Daubechies wavelet hashing",
     )
     COLORHASH = (
-        'colorhash',
+        "colorhash",
         imagehash.colorhash,
-        'HSV color hashing'
+        "HSV color hashing",
     )
 
     @classmethod
@@ -88,10 +89,10 @@ class Algorithm(Enum):
         )
 
     def __init__(
-            self,
-            algo_name: str,
-            method: Callable[[Image], imagehash.ImageHash],
-            description: str,
+        self,
+        algo_name: str,
+        method: Callable[[Image], imagehash.ImageHash],
+        description: str,
     ):
         self.algo_name = algo_name
         self.method = method
@@ -111,17 +112,11 @@ class Algorithm(Enum):
                 f"Path {path} is not a supported image format: {exc}"
             )
         except FileNotFoundError as exc:
-            raise DoesNotExistException(
-                f"Path {path} could not be found: {exc}"
-            )
+            raise DoesNotExistException(f"Path {path} could not be found: {exc}")
         except PermissionError as exc:
-            raise NotReadableException(
-                f"Could not open path {path} for reading: {exc}"
-            )
+            raise NotReadableException(f"Could not open path {path} for reading: {exc}")
         except IsADirectoryError as exc:
-            raise NotReadableException(
-                f"Path {path} is a directory: {exc}"
-            )
+            raise NotReadableException(f"Path {path} is a directory: {exc}")
         return self.method(image)
 
 
@@ -134,6 +129,7 @@ class ImageFingerprint:
     explicit: Whether the file was explicitly asked to be fingerprinted (i.e. was provided as a
         search path and not a directory's child).
     """
+
     path: Path
     image_hash: imagehash.ImageHash
     algorithm: Algorithm
@@ -143,17 +139,11 @@ class ImageFingerprint:
         """Create an ImageFingerprint from just a path (the hashing happens here)."""
         image_hash = algorithm.hash_path(path)
 
-        return cls(
-            path=path,
-            image_hash=image_hash,
-            algorithm=algorithm,
-        )
+        return cls(path=path, image_hash=image_hash, algorithm=algorithm,)
 
     @classmethod
     def recurse_paths(
-            cls,
-            search_paths: Iterable[Path],
-            algorithm: Algorithm,
+        cls, search_paths: Iterable[Path], algorithm: Algorithm,
     ) -> Generator[ImageFingerprint, None, None]:
         """
         Yields ImageFingerprint objects for all child paths in the iterable search_paths that are
@@ -178,8 +168,7 @@ class ImageFingerprint:
                 # this may throw a HashingException. we let it bubble up because the file was
                 # explicitly named.
                 yield ImageFingerprint.from_path(
-                    path=search_path,
-                    algorithm=algorithm,
+                    path=search_path, algorithm=algorithm,
                 )
 
                 seen_paths.add(search_path)
@@ -189,8 +178,7 @@ class ImageFingerprint:
                     if child_path.is_file() and child_path not in seen_paths:
                         try:
                             yield ImageFingerprint.from_path(
-                                path=child_path,
-                                algorithm=algorithm
+                                path=child_path, algorithm=algorithm
                             )
                         except HashingException:
                             # here, we don't care about HashingExceptions because we're just

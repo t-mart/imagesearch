@@ -17,6 +17,7 @@ ItemT = TypeVar("ItemT")
 
 class _FakeGenericABCMeta(ABCMeta):
     """Allows for generic subtyping"""
+
     def __getitem__(cls, item: Any) -> ABCMeta:
         """
         Generic subscript hack, like Foo[Bar].
@@ -30,13 +31,13 @@ class Command(Generic[ItemT], metaclass=_FakeGenericABCMeta):
     """
     Abstract base class for running commands. Sets up subclass requirements for each output format.
     """
+
     # If a new format is to be supported, add it to the Format enum, create a new abstract class
     # method, and then add that method to the map in output_function_by_format.
 
     @classmethod
     def output_function_by_format(
-            cls,
-            format_: Format
+        cls, format_: Format
     ) -> Callable[[Namespace, Generator[ItemT, None, None]], str]:
         """
         Selects an output function based on format. Raises an UnknownFormatException if format is
@@ -86,14 +87,13 @@ class DupeCommand(Command[Dupe]):
         return json.dumps(
             {
                 "algorithm": args.algorithm.algo_name,
-                "dupes":
-                    [
-                        {
-                            "image_hash": str(dupe.image_hash),
-                            "paths": [str(path.resolve()) for path in dupe.paths]
-                        }
-                        for dupe in items
-                    ]
+                "dupes": [
+                    {
+                        "image_hash": str(dupe.image_hash),
+                        "paths": [str(path.resolve()) for path in dupe.paths],
+                    }
+                    for dupe in items
+                ],
             },
             indent=2,
         )
@@ -111,41 +111,37 @@ class DupeCommand(Command[Dupe]):
     @classmethod
     def _generate(cls, args: Namespace) -> Generator[Dupe, None, None]:
         """Call the compare function with parsed args."""
-        return Dupe.find(
-            search_paths=args.search_paths,
-            algorithm=args.algorithm,
-        )
+        return Dupe.find(search_paths=args.search_paths, algorithm=args.algorithm,)
 
 
 class CompareCommand(Command[ImageDiff]):
     """Run the compare command."""
 
     @classmethod
-    def json_output(cls, args: Namespace, items: Generator[ImageDiff, None, None]) -> str:
+    def json_output(
+        cls, args: Namespace, items: Generator[ImageDiff, None, None]
+    ) -> str:
         """Outputs a json format string."""
         return json.dumps(
             {
                 "reference_path": str(args.ref_path.resolve()),
                 "algorithm": args.algorithm.algo_name,
-                "diffs":
-                    [
-                        {
-                            "diff": image_diff.diff,
-                            "path": str(image_diff.path.resolve())
-                        }
-                        for image_diff in items
-                    ],
+                "diffs": [
+                    {"diff": image_diff.diff, "path": str(image_diff.path.resolve())}
+                    for image_diff in items
+                ],
             },
             indent=2,
         )
 
     @classmethod
-    def text_output(cls, args: Namespace, items: Generator[ImageDiff, None, None]) -> str:
+    def text_output(
+        cls, args: Namespace, items: Generator[ImageDiff, None, None]
+    ) -> str:
         """Outputs a text format string."""
         text_lines: List[str] = [str(args.ref_path.resolve())]
         for image_diff in items:
-            text_lines.append(
-                f"{image_diff.diff}\t{image_diff.path.resolve()}")
+            text_lines.append(f"{image_diff.diff}\t{image_diff.path.resolve()}")
         return "\n".join(text_lines)
 
     @classmethod
@@ -156,5 +152,5 @@ class CompareCommand(Command[ImageDiff]):
             search_paths=args.search_paths,
             algorithm=args.algorithm,
             threshold=args.threshold,
-            stop_on_first_match=args.stop_on_first_match
+            stop_on_first_match=args.stop_on_first_match,
         )

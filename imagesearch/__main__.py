@@ -6,6 +6,7 @@ from .status import ExitStatus
 from .exceptions import ImageSearchException
 from .cli import PARSER
 
+
 def main(args: List[str] = sys.argv) -> None:  # pylint: disable=dangerous-default-value
     """Entry point function."""
     try:
@@ -23,5 +24,5 @@ def main(args: List[str] = sys.argv) -> None:  # pylint: disable=dangerous-defau
     sys.exit(exit_status.value)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -6,8 +6,10 @@ from typing import Dict
 
 from ..exceptions import UnknownFormatException
 
+
 class Format(Enum):
     """Formats for output."""
+
     TEXT = auto()
     JSON = auto()
 
