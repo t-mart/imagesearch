@@ -39,6 +39,12 @@ jobs:
       run: |
         poetry run pytest --cov=imagesearch
 
+    - name: Upload Coverage
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        poetry run coveralls
+
     - name: Create GH Release
       if: startswith(github.ref, 'refs/tags/v')
       uses: actions/create-release@v1

@@ -20,6 +20,8 @@ autopep8 = "^1.5.4"
 coverage = "^5.2.1"
 bump2version = "^1.0.0"
 pytest-cov = "^2.10.0"
+numpy = "^1.19.1"
+coveralls = "^2.1.2"
 
 [tool.poetry.scripts]
 imagesearch = 'imagesearch.__main__:main'

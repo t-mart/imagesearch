@@ -2,17 +2,19 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable, Dict, List
+from typing import Callable, Dict, Generator, Iterable, Set
 from enum import Enum, unique
 
 import imagehash
 from PIL import Image, UnidentifiedImageError
+import attr
 
 from .exceptions import (
     UnsupportedImageException,
     DoesNotExistException,
-    FileNotReadableException,
+    NotReadableException,
     UnknownAlgorithmException,
+    HashingException,
 )
 
 
@@ -68,14 +70,22 @@ class Algorithm(Enum):
         name_map: Dict[str, Algorithm] = {
             algo.algo_name: algo for algo in list(Algorithm)
         }
-        if name not in name_map:
+        name_normalized = name.lower()
+        if name_normalized not in name_map:
             raise UnknownAlgorithmException(f"No algorithm with name {name}")
-        return name_map[name]
+        return name_map[name_normalized]
 
     @classmethod
-    def algo_names(cls) -> List[str]:
-        """Return a list of all the algorithm names."""
-        return [algo.algo_name for algo in list(Algorithm)]
+    def supported_names(cls) -> str:
+        """Returns a comma-separated string of all the algo names."""
+        return ", ".join(algo.algo_name.lower() for algo in list(Algorithm))
+
+    @classmethod
+    def all_descriptions(cls) -> str:
+        """Returns a comma-separated list of algorithm names and what they do."""
+        return ", ".join(
+            f"{algo.algo_name} = {algo.description}" for algo in list(Algorithm)
+        )
 
     def __init__(
             self,
@@ -88,7 +98,12 @@ class Algorithm(Enum):
         self.description = description
 
     def hash_path(self, path: Path) -> imagehash.ImageHash:
-        """Compute the visual fingerprint of image at path with an algorithm."""
+        """
+        Compute the visual fingerprint of image at path with an algorithm.
+
+        Pillow accepts many, many image formats. Instead of trying to analyze what's acceptable
+        early, we just attempt to open the path with it and handle exceptions appropriately.
+        """
         try:
             image = Image.open(path)
         except UnidentifiedImageError as exc:
@@ -98,6 +113,89 @@ class Algorithm(Enum):
             raise DoesNotExistException(
                 f"Path {path} could not be found: {exc}")
         except PermissionError as exc:
-            raise FileNotReadableException(
+            raise NotReadableException(
                 f"Could not open path {path} for reading: {exc}")
         return self.method(image)
+
+
+@attr.s(frozen=True, auto_attribs=True, kw_only=True, order=False)
+class ImageFingerprint:
+    """
+    A file that will be fingerprinted.
+
+    path: The Path to the file
+    explicit: Whether the file was explicitly asked to be fingerprinted (i.e. was provided as a
+        search path and not a directory's child).
+    """
+    path: Path
+    image_hash: imagehash.ImageHash
+    algorithm: Algorithm
+
+    @classmethod
+    def from_path(cls, path: Path, algorithm: Algorithm) -> ImageFingerprint:
+        """Create an ImageFingerprint from just a path (the hashing happens here)."""
+        image_hash = algorithm.hash_path(path)
+
+        return cls(
+            path=path,
+            image_hash=image_hash,
+            algorithm=algorithm,
+        )
+
+    @classmethod
+    def recurse_paths(
+            cls,
+            search_paths: Iterable[Path],
+            algorithm: Algorithm,
+    ) -> Generator[ImageFingerprint, None, None]:
+        """
+        Yields ImageFingerprint objects for all child paths in the iterable search_paths that are
+        images.
+
+        search_paths should be a list of Path objects. They may point to different types of path:
+            - If the path is actually a directory, it will be recursed into and only hashable images
+              yielded. This avoids any issues with hidden files, files that aren't images, etc.
+            - If the path is a file, and it is not hashable, an exception will be thrown. Otherwise,
+              it is yielded.
+
+        Only unique paths will be yielded.
+        """
+        seen_paths: Set[Path] = set()
+
+        for search_path in search_paths:
+
+            if search_path.is_file():
+                if search_path in seen_paths:
+                    continue
+
+                # this may throw a HashingException. we let it bubble up because the file was
+                # explicitly named.
+                yield ImageFingerprint.from_path(
+                    path=search_path,
+                    algorithm=algorithm,
+                )
+
+                seen_paths.add(search_path)
+
+            elif search_path.is_dir():
+                for child_path in search_path.rglob("*"):
+                    if child_path.is_file() and child_path not in seen_paths:
+                        try:
+                            yield ImageFingerprint.from_path(
+                                path=child_path,
+                                algorithm=algorithm
+                            )
+                        except HashingException:
+                            # here, we don't care about HashingExceptions because we're just
+                            # scanning every child file. we don't require everything to be an image
+                            # in a given dir. This is for usability (don't need to cleanse a dir to
+                            # only contain images) and to workaround unavoidable hidden files
+                            # (Thumbs.db, .DS_Store, etc)
+                            continue
+                        finally:
+                            seen_paths.add(child_path)
+
+            else:
+                raise NotReadableException(
+                    f'Search path "{search_path}" is not a file or directory that can be read.'
+                )

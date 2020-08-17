@@ -1,32 +1,26 @@
-"""Run the module."""
-from __future__ import annotations
+"""The main entry point. Invoke as `imagesearch' or `python -m imagesearch'."""
 import sys
-from typing import Optional
+from typing import List
 
-from .config import get_config, Config
-from .search import search
-from .fingerprint import Algorithm
+from .status import ExitStatus
 from .exceptions import ImageSearchException
+from .cli import PARSER
 
-
-def main(config: Optional[Config] = None) -> None:
-    """Run the image matcher."""
-    if config is None:
-        config = get_config()
+def main(args: List[str] = sys.argv) -> None:  # pylint: disable=dangerous-default-value
+    """Entry point function."""
     try:
-        image_diffs = search(
-            ref_path=config.ref_path,
-            search_paths=config.search_paths,
-            algorithm=Algorithm.from_name(config.algorithm),
-            threshold=config.threshold,
-            stop_on_first_match=config.stop_on_first_match
-        )
-
-        for image_diff in image_diffs:
-            print(image_diff.output_line())
+        parsed_args = PARSER.parse_args(args[1:])
+        parsed_args.command(parsed_args)
     except ImageSearchException as exc:
-        sys.stderr.write(f"{exc}\n")
-        sys.exit(True)
+        sys.stderr.write(f"imagesearch: error: {exc}\n")
+        exit_status = ExitStatus.ERROR
+    except KeyboardInterrupt:
+        sys.stderr.write("imagesearch: error: interrupted\n")
+        exit_status = ExitStatus.ERROR_CTRL_C
+    else:
+        exit_status = ExitStatus.SUCCESS
+
+    sys.exit(exit_status.value)
 
 
 if __name__ == '__main__':
