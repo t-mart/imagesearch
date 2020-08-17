@@ -1,5 +1,6 @@
 """Test the algorithm module."""
 import pytest
+from unittest.mock import patch
 
 from imagesearch import Algorithm, ImageFingerprint
 from imagesearch.exceptions import (
@@ -8,6 +9,7 @@ from imagesearch.exceptions import (
     DoesNotExistException,
     NotReadableException,
 )
+from imagesearch import fingerprint  # need this style import for certain patches
 
 from .image_helpers import (
     REF_IMAGE,
@@ -24,31 +26,40 @@ from .image_helpers import (
 )
 
 
-def test_alogithm_valid_from_name() -> None:
+def test_algorithm_valid_from_name() -> None:
     """Tests whether lookup of a valid name is successful."""
     assert Algorithm.from_name('ahash') == Algorithm.AHASH
 
 
-def test_alogithm_invalid_from_name() -> None:
+def test_algorithm_invalid_from_name() -> None:
     """Tests whether lookup of a valid name is successful."""
     with pytest.raises(UnknownAlgorithmException):
         Algorithm.from_name('bogus')
 
 
-def test_alogithm_hash_path_unsupported() -> None:
+def test_algorithm_hash_path_unsupported() -> None:
     """Tests that trying to hash a path that's not an image throws an exception."""
     with pytest.raises(UnsupportedImageException):
         Algorithm.DHASH.hash_path(UNSUPPORTED_IMAGE)
 
 
-def test_alogithm_hash_path_non_existant() -> None:
+def test_algorithm_hash_path_non_existant() -> None:
     """Tests that trying to hash a path that does not exist throws an exception."""
     with pytest.raises(DoesNotExistException):
         Algorithm.DHASH.hash_path(NON_EXISTANT_FILE)
 
-
-def test_alogithm_hash_path_dir() -> None:
+def test_algorithm_hash_path_restrictive_permissions() -> None:
     """Tests that trying to hash a path that's not readable throws an exception."""
+    # TODO: is there a way to create an real file without read perms that can still be checked in?
+    # Or maybe use a virtual FS?
+    with pytest.raises(NotReadableException):
+        with patch('PIL.Image.open') as mock_image_open:
+            mock_image_open.side_effect = PermissionError()
+            Algorithm.DHASH.hash_path(REF_IMAGE)
+
+
+def test_algorithm_hash_path_dir() -> None:
+    """Tests that trying to hash a dir path throws an exception."""
     with pytest.raises(NotReadableException):
         Algorithm.DHASH.hash_path(TEST_IMAGE_DIR)
 
