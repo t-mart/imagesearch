@@ -9,7 +9,7 @@ import imagehash
 from PIL import Image, UnidentifiedImageError
 import attr
 
-from .exceptions import (
+from imagesearch.exceptions import (
     UnsupportedImageException,
     DoesNotExistException,
     NotReadableException,

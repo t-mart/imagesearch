@@ -2,9 +2,9 @@
 import sys
 from typing import List
 
-from .status import ExitStatus
-from .exceptions import ImageSearchException
-from .cli import PARSER
+from imagesearch.status import ExitStatus
+from imagesearch.exceptions import ImageSearchException
+from imagesearch.cli import PARSER
 
 
 def main(args: List[str] = sys.argv) -> None:  # pylint: disable=dangerous-default-value

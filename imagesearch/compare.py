@@ -6,8 +6,8 @@ from typing import Generator, List, Optional
 
 import attr
 
-from .exceptions import ThresholdException
-from .fingerprint import Algorithm, ImageFingerprint
+from imagesearch.exceptions import ThresholdException
+from imagesearch.fingerprint import Algorithm, ImageFingerprint
 
 
 @attr.s(frozen=True, auto_attribs=True, kw_only=True, order=True)

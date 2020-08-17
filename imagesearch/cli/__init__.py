@@ -1,3 +1,3 @@
 """CLI module"""
-from .parser import PARSER
-from .command import DupeCommand, CompareCommand
+from imagesearch.cli.parser import PARSER
+from imagesearch.cli.command import DupeCommand, CompareCommand

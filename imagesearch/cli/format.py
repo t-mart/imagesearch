@@ -4,7 +4,7 @@ from __future__ import annotations
 from enum import Enum, auto
 from typing import Dict
 
-from ..exceptions import UnknownFormatException
+from imagesearch.exceptions import UnknownFormatException
 
 
 class Format(Enum):

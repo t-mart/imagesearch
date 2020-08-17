@@ -3,10 +3,10 @@ from pathlib import Path
 import argparse
 from typing import NoReturn
 
-from .. import __version__
-from ..fingerprint import Algorithm
-from ..exceptions import CLIException
-from .command import DupeCommand, CompareCommand, Format
+from imagesearch import __version__
+from imagesearch.fingerprint import Algorithm
+from imagesearch.exceptions import CLIException
+from imagesearch.cli.command import DupeCommand, CompareCommand, Format
 
 
 def _add_algo_arg_to_parser(parser: argparse.ArgumentParser) -> None:

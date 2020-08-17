@@ -8,7 +8,7 @@ from typing import Dict, Iterable, Set, Generator
 from imagehash import ImageHash
 import attr
 
-from .fingerprint import Algorithm, ImageFingerprint
+from imagesearch.fingerprint import Algorithm, ImageFingerprint
 
 
 @attr.s(frozen=True, order=True, auto_attribs=True, kw_only=True)
