@@ -74,7 +74,7 @@ class Command(Generic[ItemT], metaclass=_FakeGenericABCMeta):
         """Run the command, generating any items and output them to stdout."""
         items: Generator[ItemT, None, None] = cls._generate(args)
         format_function = cls.output_function_by_format(args.format)
-        sys.stdout.write(format_function(args, items) + "\n")
+        sys.stdout.write(format_function(args=args, items=items) + "\n")  # type: ignore
 
 
 class DupeCommand(Command[Dupe]):
