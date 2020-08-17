@@ -39,7 +39,8 @@ def test_dupe_json_command(capsys) -> None:  # type: ignore
                         numpy.array([True, False, True, False])
                     ),
                     algorithm=algorithm,
-                    paths=set([Path("foo/bar/img.jpg"), Path("lol/123/img.jpg"),]),
+                    paths=set([Path("foo/bar/img.jpg"),
+                               Path("lol/123/img.jpg"), ]),
                 ),
             ]
         )
@@ -88,7 +89,7 @@ def test_compare_json_command(capsys) -> None:  # type: ignore
     with patch("imagesearch.cli.command.ImageDiff") as mock_image_diff:
         # setup
         mock_image_diff.compare.return_value = iter(
-            [ImageDiff(path=Path("foo/bar/img.jpg"), diff=5),]
+            [ImageDiff(path=Path("foo/bar/img.jpg"), diff=5), ]
         )
 
         # run
@@ -114,7 +115,7 @@ def test_compare_json_command(capsys) -> None:  # type: ignore
     assert set(json_diff.keys()) == set(["path", "diff"])
 
 
-def test_dupe_text_output() -> None:
+def test_dupe_text_output(capsys) -> None:  # type: ignore
     """
     Tests that dupe text output is built.
 
@@ -128,6 +129,8 @@ def test_dupe_text_output() -> None:
         search_paths=search_paths, algorithm=algorithm, format=format_,
     )
 
+    dupe_image_paths = [Path("foo/bar/img.jpg"), Path("lol/123/img.jpg"), ]
+
     with patch("imagesearch.cli.command.Dupe") as mock_dupe:
         # setup
         mock_dupe.find.return_value = iter(
@@ -137,11 +140,10 @@ def test_dupe_text_output() -> None:
                         numpy.array([True, False, True, False])
                     ),
                     algorithm=algorithm,
-                    paths=set([Path("foo/bar/img.jpg"), Path("lol/123/img.jpg"),]),
+                    paths=set(dupe_image_paths),
                 ),
             ]
         )
-        DupeCommand.text_output = MagicMock(return_value="")  # type: ignore
 
         # run
         DupeCommand.run(namespace)
@@ -150,12 +152,14 @@ def test_dupe_text_output() -> None:
         mock_dupe.find.assert_called_once_with(
             search_paths=search_paths, algorithm=algorithm
         )
-        DupeCommand.text_output.assert_called_once_with(  # pylint: disable=no-member
-            args=namespace, items=mock_dupe.find.return_value
-        )
+
+    capout = capsys.readouterr().out
+
+    for path in dupe_image_paths:
+        assert str(path) in capout
 
 
-def test_compare_text_output() -> None:
+def test_compare_text_output(capsys) -> None:  # type: ignore
     """
     Tests that compare text output is built.
 
@@ -177,12 +181,13 @@ def test_compare_text_output() -> None:
         format=format_,
     )
 
+    found_image_path = Path("foo/bar/img.jpg")
+
     with patch("imagesearch.cli.command.ImageDiff") as mock_image_diff:
         # setup
         mock_image_diff.compare.return_value = iter(
-            [ImageDiff(path=Path("foo/bar/img.jpg"), diff=5),]
+            [ImageDiff(path=found_image_path, diff=5), ]
         )
-        CompareCommand.text_output = MagicMock(return_value="")  # type: ignore
 
         # run
         CompareCommand.run(namespace)
@@ -195,9 +200,10 @@ def test_compare_text_output() -> None:
             threshold=threshold,
             stop_on_first_match=stop_on_first_match,
         )
-        CompareCommand.text_output.assert_called_once_with(  # pylint: disable=no-member
-            args=namespace, items=mock_image_diff.compare.return_value
-        )
+
+    capout = capsys.readouterr().out
+
+    assert str(found_image_path) in capout
 
 
 def test_output_function_by_format_throws() -> None:
