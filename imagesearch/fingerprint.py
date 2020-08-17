@@ -108,13 +108,20 @@ class Algorithm(Enum):
             image = Image.open(path)
         except UnidentifiedImageError as exc:
             raise UnsupportedImageException(
-                f"Path {path} is not a supported image format: {exc}")
+                f"Path {path} is not a supported image format: {exc}"
+            )
         except FileNotFoundError as exc:
             raise DoesNotExistException(
-                f"Path {path} could not be found: {exc}")
+                f"Path {path} could not be found: {exc}"
+            )
         except PermissionError as exc:
             raise NotReadableException(
-                f"Could not open path {path} for reading: {exc}")
+                f"Could not open path {path} for reading: {exc}"
+            )
+        except IsADirectoryError as exc:
+            raise NotReadableException(
+                f"Path {path} is a directory: {exc}"
+            )
         return self.method(image)
 
 
