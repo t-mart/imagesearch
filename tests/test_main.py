@@ -4,7 +4,7 @@ from unittest.mock import patch
 from imagesearch.__main__ import main
 from imagesearch.status import ExitStatus
 
-from .image_helpers import NON_EXISTANT_FILE, REF_IMAGE
+from .fixtures import NON_EXISTANT_FILE, REF_IMAGE
 
 
 def test_okay_exit() -> None:

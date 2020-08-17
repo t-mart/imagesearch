@@ -7,7 +7,7 @@ from imagesearch.exceptions import (
     NotReadableException,
 )
 
-from .image_helpers import (
+from .fixtures import (
     TEST_IMAGE_DIR,
     DUPE_PATH_A,
     DUPE_PATH_B,

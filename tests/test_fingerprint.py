@@ -1,6 +1,7 @@
 """Test the algorithm module."""
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from imagesearch import Algorithm, ImageFingerprint
 from imagesearch.exceptions import (
@@ -9,9 +10,8 @@ from imagesearch.exceptions import (
     DoesNotExistException,
     NotReadableException,
 )
-from imagesearch import fingerprint  # need this style import for certain patches
 
-from .image_helpers import (
+from .fixtures import (
     REF_IMAGE,
     NON_EXISTANT_FILE,
     UNSUPPORTED_IMAGE,
