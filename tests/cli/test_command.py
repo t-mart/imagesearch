@@ -95,7 +95,7 @@ def test_compare_command(capsys) -> None:  # type: ignore
 
     capjson = json.loads(capsys.readouterr().out)
 
-    assert capjson["reference_path"] == str(ref_path)
+    assert capjson["reference_path"] == str(ref_path.resolve())
     assert capjson["algorithm"] == algorithm.algo_name  # pylint: disable=no-member
     assert len(capjson["diffs"]) == 1
 
