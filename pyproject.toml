@@ -10,6 +10,7 @@ repository = "https://github.com/t-mart/imagesearch"
 python = "^3.8"
 imagehash = "^4.1.0"
 attrs = "^19.3.0"
+tqdm = "^4.48.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

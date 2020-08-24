@@ -157,13 +157,21 @@ https://github.com/JohannesBuchner/imagehash#example-results) for examples of di
 produce the same fingerprint. The source code of that project also references other pages that
 explain the workings of the algorithm.
 
-## Contributing
+# Contributing
 
-### Bug Fixes/Features
+## Features TODO
+
+- whitelist file paths by extension (currently tries to open every file in the path, which
+  hurts for directories with other big files in them.)
+  - recommended whitelist of popular extensions
+- asyncio for reading? look at `aiofile` project and Image.open(BytesIO(...data...))
+- pass configuration options for algorithms as exposed by imagehash instead of defaults.
+
+## Bug Fixes/Features
 
 Submit a PR from an appropriately named feature branch off of master.
 
-### Releasing
+## Releasing
 
 1. Bump the version with `bumpversion [patch|minor|major]`. This will update the version number
 around the project, commit and tag it.

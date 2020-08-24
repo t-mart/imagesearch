@@ -17,17 +17,6 @@ class ImageDiff:
     path: Path = attr.ib(order=False)
     diff: int
 
-    # def text_output(self) -> str:
-    #     """Return the text string of this object"""
-    #     return f"{self.diff}\t{self.path}"
-
-    # def jsonable_output(self) -> Dict[str, Any]:
-    #     """Return an object that can be json-encoded."""
-    #     return dict(
-    #         path=str(self.path),
-    #         diff=self.diff
-    #     )
-
     @staticmethod
     def _check_threshold(threshold: Optional[int]) -> None:
         """Checks the threshold for nonnegativity."""

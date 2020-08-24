@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable, Dict, Generator, Iterable, Set
+from typing import Callable, Dict, Generator, Iterable, Set, List, Optional, Iterator
 from enum import Enum, unique
+import warnings
+from contextlib import contextmanager
 
 import imagehash
 from PIL import Image, UnidentifiedImageError
 import attr
 
+from imagesearch.progress import SearchProgressBar
 from imagesearch.exceptions import (
     UnsupportedImageException,
     DoesNotExistException,
@@ -105,19 +108,35 @@ class Algorithm(Enum):
         Pillow accepts many, many image formats. Instead of trying to analyze what's acceptable
         early, we just attempt to open the path with it and handle exceptions appropriately.
         """
+
+        @contextmanager
+        def ignore_pil_warnings() -> Iterator[None]:
+            """
+            Ignores PIL warnings that sometimes popup. Have seen them for too-big of files on open()
+            and for transparency layers when reading.
+            """
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", module=r"PIL\.Image")
+                yield
+
         try:
-            image = Image.open(path)
+            with ignore_pil_warnings():
+                image = Image.open(path)
         except UnidentifiedImageError as exc:
             raise UnsupportedImageException(
                 f"Path {path} is not a supported image format: {exc}"
             )
         except FileNotFoundError as exc:
-            raise DoesNotExistException(f"Path {path} could not be found: {exc}")
+            raise DoesNotExistException(
+                f"Path {path} could not be found: {exc}")
         except PermissionError as exc:
-            raise NotReadableException(f"Could not open path {path} for reading: {exc}")
+            raise NotReadableException(
+                f"Could not open path {path} for reading: {exc}")
         except IsADirectoryError as exc:
             raise NotReadableException(f"Path {path} is a directory: {exc}")
-        return self.method(image)
+
+        with ignore_pil_warnings():
+            return self.method(image)
 
 
 @attr.s(frozen=True, auto_attribs=True, kw_only=True, order=False)
@@ -141,6 +160,54 @@ class ImageFingerprint:
 
         return cls(path=path, image_hash=image_hash, algorithm=algorithm,)
 
+    @attr.s(frozen=True, auto_attribs=True, kw_only=True, order=False)
+    class _WalkedPath:
+        path: Path
+        from_dir_search: bool
+
+    @classmethod
+    def _walk_paths(
+        cls,
+        search_paths: Iterable[Path],
+        pbar: Optional[SearchProgressBar] = None,
+    ) -> List[_WalkedPath]:
+        """
+        Walk all paths in search_paths.
+
+        We return a list so the progress bar can know the length. Unfortunately, this puts all paths
+        in memory.
+        """
+        def add_to_pbar() -> None:
+            if pbar is not None:
+                pbar.add_to_total()
+
+        paths: List[ImageFingerprint._WalkedPath] = []
+
+        for search_path in search_paths:
+
+            if search_path.is_file():
+                paths.append(ImageFingerprint._WalkedPath(
+                    path=search_path,
+                    from_dir_search=False
+                ))
+                add_to_pbar()
+
+            elif search_path.is_dir():
+                for child_path in search_path.rglob("*"):
+                    if child_path.is_file():
+                        paths.append(ImageFingerprint._WalkedPath(
+                            path=child_path,
+                            from_dir_search=True
+                        ))
+                        add_to_pbar()
+
+            else:
+                raise NotReadableException(
+                    f'Search path "{search_path}" is not a file or directory that can be read.'
+                )
+
+        return paths
+
     @classmethod
     def recurse_paths(
         cls, search_paths: Iterable[Path], algorithm: Algorithm,
@@ -158,39 +225,26 @@ class ImageFingerprint:
         Only unique paths will be yielded.
         """
         seen_paths: Set[Path] = set()
+        pbar = SearchProgressBar()
 
-        for search_path in search_paths:
+        with pbar:
+            paths = cls._walk_paths(search_paths, pbar=pbar)
 
-            if search_path.is_file():
-                if search_path in seen_paths:
+            for walked_path in paths:
+                if walked_path.path in seen_paths:
+                    pbar.add_skip(walked_path.path)
                     continue
 
-                # this may throw a HashingException. we let it bubble up because the file was
-                # explicitly named.
-                yield ImageFingerprint.from_path(
-                    path=search_path, algorithm=algorithm,
-                )
-
-                seen_paths.add(search_path)
-
-            elif search_path.is_dir():
-                for child_path in search_path.rglob("*"):
-                    if child_path.is_file() and child_path not in seen_paths:
-                        try:
-                            yield ImageFingerprint.from_path(
-                                path=child_path, algorithm=algorithm
-                            )
-                        except HashingException:
-                            # here, we don't care about HashingExceptions because we're just
-                            # scanning every child file. we don't require everything to be an image
-                            # in a given dir. This is for usability (don't need to cleanse a dir to
-                            # only contain images) and to workaround unavoidable hidden files
-                            # (Thumbs.db, .DS_Store, etc)
-                            continue
-                        finally:
-                            seen_paths.add(child_path)
-
-            else:
-                raise NotReadableException(
-                    f'Search path "{search_path}" is not a file or directory that can be read.'
-                )
+                try:
+                    yield ImageFingerprint.from_path(
+                        path=walked_path.path, algorithm=algorithm,
+                    )
+                except HashingException:
+                    if walked_path.from_dir_search:
+                        pbar.add_skip(walked_path.path)
+                        continue
+                    raise
+                else:
+                    pbar.add_hash(walked_path.path)
+                finally:
+                    seen_paths.add(walked_path.path)
