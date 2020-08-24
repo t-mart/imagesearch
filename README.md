@@ -173,6 +173,6 @@ Submit a PR from an appropriately named feature branch off of master.
 
 ## Releasing
 
-1. Bump the version with `bumpversion [patch|minor|major]`. This will update the version number
-around the project, commit and tag it.
+1. Bump the version with `poetry run bumpversion [patch|minor|major]`. This will update the version
+number around the project, commit and tag it.
 2. Push the repo. A Github release will be made and published to PyPI.
