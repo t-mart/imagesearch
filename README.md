@@ -34,17 +34,17 @@ See [imagesearch on PyPI](https://pypi.org/project/imagesearch/).
 
 While the subcommands may have unique arguments, others are common among them:
 
-- Algorithm arguments, which specify which fingerprint algorithm to use. For help in choosing, see
+- Algorithm selection, which specifies which fingerprint algorithm to use. For help in choosing, see
   the section below. For example, to use "average hashing", specify `--ahash`. **If no algorithm is
   specified, `--dhash` is implied.**
 
   - These algorithms can take in additional parameters to tune their performance. See the help
     output for what these parameters are. They should be given in a comma-separated list, joining
-    each argument name to its value with an equals sign. For example:
+    each parameter name to its value with an equals sign. For example:
 
     ```
     > imagesearch dupe images/ --whash --algo-params hash_size=8,mode=db4
-    > imagesearch dupe --help  # for more detail
+    > imagesearch dupe --help  # for more info and value constraints
     ```
 
 - `-f`/`-format` specifies the output format of results. This can be either `text` or `json` (the
