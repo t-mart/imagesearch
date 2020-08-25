@@ -1,10 +1,15 @@
 # imagesearch
 
-![PyPI](https://img.shields.io/pypi/v/imagesearch)
-![Build](https://github.com/t-mart/imagesearch/workflows/Build/badge.svg?branch=master)
+[![PyPI](https://img.shields.io/pypi/v/imagesearch)](
+https://pypi.org/project/imagesearch/)
+[![Build](https://github.com/t-mart/imagesearch/workflows/Build/badge.svg?branch=master)](
+https://github.com/t-mart/imagesearch/actions?query=branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/t-mart/imagesearch/badge.svg?branch=master)](
 https://coveralls.io/github/t-mart/imagesearch?branch=master)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imagesearch)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imagesearch)](
+https://pypi.org/project/imagesearch/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](
+https://github.com/psf/black)
 
 `imagesearch` performs visual comparison operations on images.
 
