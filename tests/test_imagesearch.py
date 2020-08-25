@@ -4,4 +4,4 @@ from imagesearch import __version__
 
 def test_version() -> None:
     """Tests the version of the application"""
-    assert __version__ == "0.3.0"
+    assert __version__ == "0.4.0"
