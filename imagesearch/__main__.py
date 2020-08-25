@@ -25,4 +25,4 @@ def main(args: List[str] = sys.argv) -> None:  # pylint: disable=dangerous-defau
 
 
 if __name__ == "__main__":
-    main()
+    main()   # pragma: no cover
