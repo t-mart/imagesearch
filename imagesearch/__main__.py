@@ -1,4 +1,4 @@
-"""The main entry point. Invoke as `imagesearch' or `python -m imagesearch'."""
+"""The main entry point. Invoke as `imagesearch' or `python -m imagesearch`."""
 import sys
 from typing import List
 
