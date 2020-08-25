@@ -28,14 +28,25 @@ See [imagesearch on PyPI](https://pypi.org/project/imagesearch/).
         > imagesearch --help
         ...
 
-### Commands
+## Commands
 
 `imagesearch` functionality is broken up into subcommands provided on the command line.
 
-All subcommands share a few arguments:
+While the subcommands may have unique arguments, others are common among them:
 
-- `-a`/`--algorithm` specifies which fingerprint algorithm to use. For the choice, see the section
-  below.
+- Algorithm arguments, which specify which fingerprint algorithm to use. For help in choosing, see
+  the section below. For example, to use "average hashing", specify `--ahash`. **If no algorithm is
+  specified, `--dhash` is implied.**
+
+  - These algorithms can take in additional parameters to tune their performance. See the help
+    output for what these parameters are. They should be given in a comma-separated list, joining
+    each argument name to its value with an equals sign. For example:
+
+    ```
+    > imagesearch dupe images/ --whash --algo-params hash_size=8,mode=db4
+    > imagesearch dupe --help  # for more detail
+    ```
+
 - `-f`/`-format` specifies the output format of results. This can be either `text` or `json` (the
   default). `json` should be used when the results are to be read by another program because
   eccentricities in filenames will be properly encoded. _(All examples below use `text` for
@@ -79,7 +90,7 @@ All subcommands share a few arguments:
 
 - Specify a different algorithm:
 
-        > imagesearch search needle.jpg haystack\ --algorithm colorhash --format text
+        > imagesearch search needle.jpg haystack\ --colorhash --format text
         ...
 
 - Get more help:
@@ -124,16 +135,16 @@ more information about the techniques can be found there.
 
 All the fingerprinting algorithms in `imagesearch` come from
 [imagehash](https://github.com/JohannesBuchner/imagehash). In `imagesearch`, you may specify which
-algorithm to use by passing the appropriate option value to the `-a` or `--algorithm` flag:
+algorithm to use by giving an argument in one of the following forms:
 
-- `ahash`: Average hashing (aHash)
-- `phash`: 2-axis perceptual hashing (pHash)
-- `phash-simple`: 1-axis perceptual hashing (pHash)
-- `dhash`: Horizontal difference hashing (dHash)
-- `dhash-vert`: Vertical difference hashing (dHash)
-- `whash-haar`: Haar wavelet hashing (wHash)
-- `whash-db4`: Daubechies wavelet hashing (wHash)
-- `colorhash`: HSV color hashing (colorhash)
+- `--ahash`: Average hashing (aHash)
+- `--phash`: 2-axis perceptual hashing (pHash)
+- `--phash-simple`: 1-axis perceptual hashing (pHash)
+- `--dhash`: Horizontal difference hashing (dHash)
+- `--dhash-vert`: Vertical difference hashing (dHash)
+- `--whash`: Wavelet hashing (wHash), can specify either Haar (`mode=haar`) or Daubechies
+  (`mode=db4`)
+- `--colorhash`: HSV color hashing (colorhash)
 
 ## Collisions
 These algorithms trade away accuracy for speed and size, usually with acceptable results. Instead of
@@ -157,15 +168,32 @@ https://github.com/JohannesBuchner/imagehash#example-results) for examples of di
 produce the same fingerprint. The source code of that project also references other pages that
 explain the workings of the algorithm.
 
+### Tuning
+If you notice collisions for images you expect to hash differently, try changing the algorithm
+parameters. One easy way to do this is to increase the hash size, done for example by:
+
+```
+imagesearch dupe images/ --dhash --algo-params hash_size=16
+```
+
+See the subcommand help for more details and any constraints that may be on the value.
+
 # Contributing
 
 ## Features TODO
 
 - whitelist file paths by extension (currently tries to open every file in the path, which
-  hurts for directories with other big files in them.)
-  - recommended whitelist of popular extensions
-- asyncio for reading? look at `aiofile` project and Image.open(BytesIO(...data...))
-- pass configuration options for algorithms as exposed by imagehash instead of defaults.
+  hurts for directories with other big files in them. Not sure if `PIL.Image.open` is smart enough
+  to failfast on unknown data.) Something like `--ext .jpg --ext .png --ext .jpeg`.
+  - set whitelist of popular extensions with something like `--only-popular-extensions`.
+- asyncio for reading? look at `aiofile` project and Image.open(BytesIO(...data...)). Would this
+  even help though? Is there harddisk read parallelism to leverage?
+- algorithm parameter parsing uses it's own little sublanguage (comma-separated key=value pairs).
+  This could be a first-order argparse task instead. Would have to inspect each `Algorithm` and
+  auto-generate acceptable arguments. `argparse.ArgumentParser` has a nice `parse_known_args`
+  method that could chomp away at non-algorithm-specific arguments first, and then parse
+  algorithm-specific ones once the algorithm is known. How would we generate help text for this
+  though?
 
 ## Bug Fixes/Features
 

@@ -1,7 +1,7 @@
 """Test commands."""
 from argparse import Namespace
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import json
 from functools import partial
 
@@ -25,9 +25,10 @@ def test_dupe_json_command(capsys) -> None:  # type: ignore
     search_paths = [Path("foo/bar"), Path("lol/123")]
     algorithm = Algorithm.DHASH
     format_ = Format.JSON
+    algo_params = {"hash_size": 4}
 
     namespace = Namespace(
-        search_paths=search_paths, algorithm=algorithm, format=format_,
+        search_paths=search_paths, algorithm=algorithm, format=format_, algo_params=algo_params
     )
 
     with patch("imagesearch.cli.command.Dupe") as mock_dupe:
@@ -50,7 +51,9 @@ def test_dupe_json_command(capsys) -> None:  # type: ignore
 
         # verify
         mock_dupe.find.assert_called_once_with(
-            search_paths=search_paths, algorithm=algorithm
+            search_paths=search_paths,
+            algorithm=algorithm,
+            algo_params=algo_params
         )
 
     # verify json structure
@@ -76,11 +79,13 @@ def test_compare_json_command(capsys) -> None:  # type: ignore
     threshold = 123
     stop_on_first_match = True
     format_ = Format.JSON
+    algo_params = {"hash_size": 4}
 
     namespace = Namespace(
         ref_path=ref_path,
         search_paths=search_paths,
         algorithm=algorithm,
+        algo_params=algo_params,
         threshold=threshold,
         stop_on_first_match=stop_on_first_match,
         format=format_,
@@ -100,6 +105,7 @@ def test_compare_json_command(capsys) -> None:  # type: ignore
             ref_path=ref_path,
             search_paths=search_paths,
             algorithm=algorithm,
+            algo_params=algo_params,
             threshold=threshold,
             stop_on_first_match=stop_on_first_match,
         )
@@ -123,10 +129,11 @@ def test_dupe_text_output(capsys) -> None:  # type: ignore
     """
     search_paths = [Path("foo/bar"), Path("lol/123")]
     algorithm = Algorithm.DHASH
+    algo_params = {"hash_size": 4}
     format_ = Format.TEXT
 
     namespace = Namespace(
-        search_paths=search_paths, algorithm=algorithm, format=format_,
+        search_paths=search_paths, algorithm=algorithm, format=format_, algo_params=algo_params,
     )
 
     dupe_image_paths = [Path("foo/bar/img.jpg"), Path("lol/123/img.jpg"), ]
@@ -150,7 +157,9 @@ def test_dupe_text_output(capsys) -> None:  # type: ignore
 
         # verify
         mock_dupe.find.assert_called_once_with(
-            search_paths=search_paths, algorithm=algorithm
+            search_paths=search_paths,
+            algorithm=algorithm,
+            algo_params=algo_params,
         )
 
     capout = capsys.readouterr().out
@@ -168,6 +177,7 @@ def test_compare_text_output(capsys) -> None:  # type: ignore
     ref_path = Path("ref/img")
     search_paths = [Path("foo/bar"), Path("lol/123")]
     algorithm = Algorithm.DHASH
+    algo_params = {"hash_size": 4}
     threshold = 123
     stop_on_first_match = True
     format_ = Format.TEXT
@@ -176,6 +186,7 @@ def test_compare_text_output(capsys) -> None:  # type: ignore
         ref_path=ref_path,
         search_paths=search_paths,
         algorithm=algorithm,
+        algo_params=algo_params,
         threshold=threshold,
         stop_on_first_match=stop_on_first_match,
         format=format_,
@@ -197,6 +208,7 @@ def test_compare_text_output(capsys) -> None:  # type: ignore
             ref_path=ref_path,
             search_paths=search_paths,
             algorithm=algorithm,
+            algo_params=algo_params,
             threshold=threshold,
             stop_on_first_match=stop_on_first_match,
         )

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Generator, List, Optional
+from typing import Generator, List, Optional, Dict, Union
 
 import attr
 
@@ -42,6 +42,7 @@ class ImageDiff:
         ref_path: Path,
         search_paths: List[Path],
         algorithm: Algorithm,
+        algo_params: Optional[Dict[str, Optional[Union[str, bool, int]]]] = None,
         stop_on_first_match: bool = False,
         threshold: Optional[int] = None,
     ) -> Generator[ImageDiff, None, None]:
@@ -52,10 +53,16 @@ class ImageDiff:
         cls._check_threshold(threshold)
         cls._check_stop_on_first_match(stop_on_first_match, threshold)
 
-        reference_fingerprint = ImageFingerprint.from_path(ref_path, algorithm)
+        reference_fingerprint = ImageFingerprint.from_path(
+            path=ref_path,
+            algorithm=algorithm,
+            algo_params=algo_params,
+        )
 
         for image_fingerprint in ImageFingerprint.recurse_paths(
-            search_paths, algorithm
+            search_paths=search_paths,
+            algorithm=algorithm,
+            algo_params=algo_params,
         ):
             diff = image_fingerprint.image_hash - reference_fingerprint.image_hash
             if threshold is None or diff <= threshold:

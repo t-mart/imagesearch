@@ -11,7 +11,7 @@ def main(args: List[str] = sys.argv) -> None:  # pylint: disable=dangerous-defau
     """Entry point function."""
     try:
         parsed_args = PARSER.parse_args(args[1:])
-        parsed_args.command(parsed_args)
+        parsed_args.command(args=parsed_args)
     except ImageSearchException as exc:
         sys.stderr.write(f"imagesearch: error: {exc}\n")
         exit_status = ExitStatus.ERROR

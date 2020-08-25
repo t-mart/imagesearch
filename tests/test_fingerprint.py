@@ -1,17 +1,15 @@
-"""Test the algorithm module."""
+"""Test the fingerprint module."""
 from unittest.mock import patch
 
 import pytest
 
 from imagesearch import Algorithm, ImageFingerprint
 from imagesearch.exceptions import (
-    UnknownAlgorithmException,
     UnsupportedImageException,
-    DoesNotExistException,
     NotReadableException,
 )
 
-from .fixtures import (
+from tests.fixtures import (
     REF_IMAGE,
     NON_EXISTANT_FILE,
     UNSUPPORTED_IMAGE,
@@ -26,65 +24,13 @@ from .fixtures import (
 )
 
 
-def test_algorithm_valid_from_name() -> None:
-    """Tests whether lookup of a valid name is successful."""
-    assert Algorithm.from_name("ahash") == Algorithm.AHASH
-
-
-def test_algorithm_invalid_from_name() -> None:
-    """Tests whether lookup of a valid name is successful."""
-    with pytest.raises(UnknownAlgorithmException):
-        Algorithm.from_name("bogus")
-
-
-def test_algorithm_hash_path_unsupported() -> None:
-    """Tests that trying to hash a path that's not an image throws an exception."""
-    with pytest.raises(UnsupportedImageException):
-        Algorithm.DHASH.hash_path(UNSUPPORTED_IMAGE)
-
-
-def test_algorithm_hash_path_non_existant() -> None:
-    """Tests that trying to hash a path that does not exist throws an exception."""
-    with pytest.raises(DoesNotExistException):
-        Algorithm.DHASH.hash_path(NON_EXISTANT_FILE)
-
-
-def test_algorithm_hash_path_restrictive_permissions() -> None:
-    """Tests that trying to hash a path that's not readable throws an exception."""
-    # TODO: is there a way to create an real file without read perms that can still be checked in?
-    # Or maybe use a virtual FS?
-    with pytest.raises(NotReadableException):
-        with patch("PIL.Image.open") as mock_image_open:
-            mock_image_open.side_effect = PermissionError()
-            Algorithm.DHASH.hash_path(REF_IMAGE)
-
-
-def test_algorithm_hash_path_dir() -> None:
-    """Tests that trying to hash a dir path throws an exception."""
-    with pytest.raises(NotReadableException):
-        Algorithm.DHASH.hash_path(TEST_IMAGE_DIR)
-
-
-def test_algorithm_supported_names() -> None:
-    """Tests all algorithm names will show up (in help text)."""
-    algo_names = [
-        "ahash",
-        "phash",
-        "phash-simple",
-        "dhash",
-        "dhash-vert",
-        "whash-haar",
-        "whash-db4",
-        "colorhash",
-    ]
-    for algo_name in algo_names:
-        assert algo_name in Algorithm.supported_names()
-
-
 def test_image_fingerprint_from_path() -> None:
     """Tests that an ImageFingerprint can be created from a path."""
     algorithm = Algorithm.DHASH
-    image_fingerprint = ImageFingerprint.from_path(path=REF_IMAGE, algorithm=algorithm,)
+    image_fingerprint = ImageFingerprint.from_path(
+        path=REF_IMAGE,
+        algorithm=algorithm,
+    )
 
     assert image_fingerprint.path == REF_IMAGE
     assert image_fingerprint.algorithm == algorithm
@@ -117,7 +63,8 @@ def test_image_fingerprint_recurse_paths_dir_and_other_file() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, IMAGE_NOT_IN_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(
+            search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == 1 + TEST_IMAGE_SUBDIR_1_1_IMAGE_COUNT
 
@@ -129,7 +76,8 @@ def test_image_fingerprint_recurse_paths_dir_and_child_file() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, IMAGE_IN_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(
+            search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == TEST_IMAGE_SUBDIR_1_1_IMAGE_COUNT
 
@@ -140,7 +88,8 @@ def test_image_fingerprint_recurse_paths_same_dir_twice() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, TEST_IMAGE_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(
+            search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == TEST_IMAGE_SUBDIR_1_1_IMAGE_COUNT
 
@@ -152,7 +101,8 @@ def test_image_fingerprint_recurse_paths_two_dirs() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, TEST_IMAGE_SUBDIR_1_0]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH)
+        ImageFingerprint.recurse_paths(
+            search_paths=paths, algorithm=Algorithm.DHASH)
     )
     assert (
         len(image_fingerprints)
@@ -167,7 +117,8 @@ def test_image_fingerprint_recurse_paths_two_files() -> None:
     """
     paths = [IMAGE_IN_SUBDIR_1_1, IMAGE_NOT_IN_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(
+            search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == 2
 

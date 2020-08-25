@@ -1,142 +1,18 @@
-"""Compute visual fingerprints of images."""
+"""Compute visual fingerprints of on image files and directories."""
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable, Dict, Generator, Iterable, Set, List, Optional, Iterator
-from enum import Enum, unique
-import warnings
-from contextlib import contextmanager
+from typing import Generator, Iterable, Set, List, Optional, Dict, Union
 
 import imagehash
-from PIL import Image, UnidentifiedImageError
 import attr
 
 from imagesearch.progress import SearchProgressBar
+from imagesearch.algo import Algorithm
 from imagesearch.exceptions import (
-    UnsupportedImageException,
-    DoesNotExistException,
     NotReadableException,
-    UnknownAlgorithmException,
     HashingException,
 )
-
-
-@unique
-class Algorithm(Enum):
-    """
-    An enumeration of the algorithms provided by imagehash, along with a name and description.
-    """
-
-    AHASH = (
-        "ahash",
-        imagehash.average_hash,
-        "Average hashing",
-    )
-    PHASH = (
-        "phash",
-        imagehash.phash,
-        "2-axis perceptual hashing",
-    )
-    PHASH_SIMPLE = (
-        "phash-simple",
-        imagehash.phash_simple,
-        "1-axis perceptual hashing",
-    )
-    DHASH = (
-        "dhash",
-        imagehash.dhash,
-        "Horizontal difference hashing",
-    )
-    DHASH_VERT = (
-        "dhash-vert",
-        imagehash.dhash_vertical,
-        "Vertical difference hashing",
-    )
-    WHASH_HAAR = (
-        "whash-haar",
-        imagehash.whash,
-        "Haar wavelet hashing",
-    )
-    WHASH_DB4 = (
-        "whash-db4",
-        lambda img: imagehash.whash(img, mode="db4"),
-        "Daubechies wavelet hashing",
-    )
-    COLORHASH = (
-        "colorhash",
-        imagehash.colorhash,
-        "HSV color hashing",
-    )
-
-    @classmethod
-    def from_name(cls, name: str) -> Algorithm:
-        """Returns an algorithm by name."""
-        name_map: Dict[str, Algorithm] = {
-            algo.algo_name: algo for algo in list(Algorithm)
-        }
-        name_normalized = name.lower()
-        if name_normalized not in name_map:
-            raise UnknownAlgorithmException(f"No algorithm with name {name}")
-        return name_map[name_normalized]
-
-    @classmethod
-    def supported_names(cls) -> str:
-        """Returns a comma-separated string of all the algo names."""
-        return ", ".join(algo.algo_name.lower() for algo in list(Algorithm))
-
-    @classmethod
-    def all_descriptions(cls) -> str:
-        """Returns a comma-separated list of algorithm names and what they do."""
-        return ", ".join(
-            f"{algo.algo_name} = {algo.description}" for algo in list(Algorithm)
-        )
-
-    def __init__(
-        self,
-        algo_name: str,
-        method: Callable[[Image], imagehash.ImageHash],
-        description: str,
-    ):
-        self.algo_name = algo_name
-        self.method = method
-        self.description = description
-
-    def hash_path(self, path: Path) -> imagehash.ImageHash:
-        """
-        Compute the visual fingerprint of image at path with an algorithm.
-
-        Pillow accepts many, many image formats. Instead of trying to analyze what's acceptable
-        early, we just attempt to open the path with it and handle exceptions appropriately.
-        """
-
-        @contextmanager
-        def ignore_pil_warnings() -> Iterator[None]:
-            """
-            Ignores PIL warnings that sometimes popup. Have seen them for too-big of files on open()
-            and for transparency layers when reading.
-            """
-            with warnings.catch_warnings():
-                warnings.filterwarnings("ignore", module=r"PIL\.Image")
-                yield
-
-        try:
-            with ignore_pil_warnings():
-                image = Image.open(path)
-        except UnidentifiedImageError as exc:
-            raise UnsupportedImageException(
-                f"Path {path} is not a supported image format: {exc}"
-            )
-        except FileNotFoundError as exc:
-            raise DoesNotExistException(
-                f"Path {path} could not be found: {exc}")
-        except PermissionError as exc:
-            raise NotReadableException(
-                f"Could not open path {path} for reading: {exc}")
-        except IsADirectoryError as exc:
-            raise NotReadableException(f"Path {path} is a directory: {exc}")
-
-        with ignore_pil_warnings():
-            return self.method(image)
 
 
 @attr.s(frozen=True, auto_attribs=True, kw_only=True, order=False)
@@ -154,11 +30,19 @@ class ImageFingerprint:
     algorithm: Algorithm
 
     @classmethod
-    def from_path(cls, path: Path, algorithm: Algorithm) -> ImageFingerprint:
+    def from_path(
+        cls,
+        path: Path,
+        algorithm: Algorithm,
+        algo_params: Optional[Dict[str, Optional[Union[str, bool, int]]]] = None
+    ) -> ImageFingerprint:
         """Create an ImageFingerprint from just a path (the hashing happens here)."""
-        image_hash = algorithm.hash_path(path)
+        image_hash = algorithm(
+            path=path,
+            algo_params=algo_params
+        )
 
-        return cls(path=path, image_hash=image_hash, algorithm=algorithm,)
+        return cls(path=path, image_hash=image_hash, algorithm=algorithm)
 
     @attr.s(frozen=True, auto_attribs=True, kw_only=True, order=False)
     class _WalkedPath:
@@ -210,7 +94,10 @@ class ImageFingerprint:
 
     @classmethod
     def recurse_paths(
-        cls, search_paths: Iterable[Path], algorithm: Algorithm,
+        cls,
+        search_paths: Iterable[Path],
+        algorithm: Algorithm,
+        algo_params: Optional[Dict[str, Optional[Union[str, bool, int]]]] = None,
     ) -> Generator[ImageFingerprint, None, None]:
         """
         Yields ImageFingerprint objects for all child paths in the iterable search_paths that are
@@ -237,7 +124,9 @@ class ImageFingerprint:
 
                 try:
                     yield ImageFingerprint.from_path(
-                        path=walked_path.path, algorithm=algorithm,
+                        path=walked_path.path,
+                        algorithm=algorithm,
+                        algo_params=algo_params,
                     )
                 except HashingException:
                     if walked_path.from_dir_search:

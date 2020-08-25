@@ -25,6 +25,10 @@ class CLIException(ImageSearchException):
     """Indicates a problem parsing command line arguments."""
 
 
+class BadAlgoParamsException(CLIException):
+    """Indicates that the additional args passed to the algorithm are malformed."""
+
+
 class DoesNotExistException(HashingException):
     """Indicates that a path does not exist."""
 

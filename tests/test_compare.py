@@ -8,7 +8,7 @@ from imagesearch.exceptions import (
     DoesNotExistException,
 )
 
-from .fixtures import (
+from tests.fixtures import (
     REF_IMAGE,
     TEST_IMAGE_DIR,
     UNSUPPORTED_IMAGE,
