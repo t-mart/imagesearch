@@ -23,7 +23,7 @@ class SearchProgressBar(tqdm):
         leave=True,
         file=None,
         ncols=None,
-        mininterval=0.1,
+        # mininterval=0.1,
         maxinterval=10.0,
         miniters=None,
         ascii=None,  # pylint: disable=redefined-builtin
@@ -53,7 +53,7 @@ class SearchProgressBar(tqdm):
             leave=leave,
             file=file,
             ncols=ncols,
-            mininterval=mininterval,
+            mininterval=1.0,
             maxinterval=maxinterval,
             miniters=miniters,
             ascii=ascii,
