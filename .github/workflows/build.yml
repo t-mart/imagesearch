@@ -1,4 +1,4 @@
-name: Build
+name: Build and Deploy
 
 on:
   push:
@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
+        python: ['3.8']
 
     steps:
     - name: Checkout code
@@ -20,25 +21,25 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8'
-
-    - name: Install system dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry config cache-dir .poetry_cache
+        python-version: ${{ matrix.python }}
 
     - name: Retrieve project cache dependencies
       uses: actions/cache@v2
       with:
-        path: .poetry_cache
+        path: |
+          .poetry_cache
+          .pip_cache
         key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
           ${{ runner.os }}-build-
-          ${{ runner.os }}-
+
+    - name: Install system dependencies
+      run: |
+        python -m pip install --cache-dir .pip_cache --upgrade pip poetry
 
     - name: Install project dependencies
       run: |
+        poetry config cache-dir .poetry_cache
         poetry install
 
     - name: Unit test
@@ -57,13 +58,60 @@ jobs:
       run: |
         poetry run  mypy imagesearch tests
 
-    - name: Upload Coverage
+    - name: Archive code coverage results
+      # TODO this if statement is always evaluating to true
+      if: matrix.os == 'ubuntu-latest' && matrix.python == '3.8'
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report-os-${{ matrix.os }}-python-${{ matrix.python }}-rev-${{ github.sha }}
+        path: .coverage
+
+  deploy:
+    name: Deploy
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Retrieve project cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          .poetry_cache
+          .pip_cache
+        key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
+    - name: Install system dependencies
+      run: |
+        python -m pip install --cache-dir .pip_cache --upgrade pip poetry
+
+    - name: Install project dependencies
+      run: |
+        poetry config cache-dir .poetry_cache
+        poetry install
+
+    - name: Download coverage report
+      uses: actions/download-artifact@v2
+      with:
+        name: code-coverage-report-os-ubuntu-latest-python-3.8-rev-${{ github.sha }}
+
+    - name: Upload coverage
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         poetry run coveralls
 
-    - name: Create GH Release
+    - name: Create GH release
       if: startswith(github.ref, 'refs/tags/v')
       uses: actions/create-release@v1
       env:
