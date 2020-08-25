@@ -45,7 +45,7 @@ jobs:
     - name: Install project dependencies
       run: |
         poetry config cache-dir ${{ env.poetry-cache }}
-        poetry install -vv
+        poetry install -v
 
     - name: Unit test
       run: |
@@ -104,7 +104,7 @@ jobs:
     - name: Install project dependencies
       run: |
         poetry config cache-dir ${{ env.poetry-cache }}
-        poetry install -vv
+        poetry install -v
 
     - name: Download coverage report
       uses: actions/download-artifact@v2
