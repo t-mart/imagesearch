@@ -13,9 +13,8 @@ https://github.com/psf/black)
 
 `imagesearch` performs visual comparison operations on images.
 
-The `compare` command measures visual similiarity between a reference image and a set of other
-images. This can be used to search for a similar image that you know among a deep directory
-structure of images that you don't want to manually scan.
+The `compare` command measures visual similiarity between a reference image and a directory of other
+images. This can be used to quantify how close an image "appears" to other images.
 
 The `dupe` command finds images which have identical visual fingerprints in a search path. This
 can be used to identify images which you can delete later.
