@@ -197,6 +197,9 @@ See the subcommand help for more details and any constraints that may be on the 
   auto-generate acceptable arguments. There would have to be some work done to combine arguments
   found with the same name from different algorithms (and hope that they're of the same type). Then,
   you'd have to return an error if an argument is passed for an algorithm that doesn't accept it.
+- consider https://codecov.io/ for coverage instead of coveralls
+- workflow_dispatch for manual GH actions runs
+- clean up GH actions, see good reference https://github.com/python-attrs/attrs/blob/master/.github/workflows/main.yml
 
 ## Bug Fixes/Features
 
