@@ -32,6 +32,7 @@ jobs:
         key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
           ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
     - name: Install system dependencies
       run: |
@@ -90,6 +91,7 @@ jobs:
         key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
           ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
     - name: Install system dependencies
       run: |
