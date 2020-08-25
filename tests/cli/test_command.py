@@ -28,7 +28,10 @@ def test_dupe_json_command(capsys) -> None:  # type: ignore
     algo_params = {"hash_size": 4}
 
     namespace = Namespace(
-        search_paths=search_paths, algorithm=algorithm, format=format_, algo_params=algo_params
+        search_paths=search_paths,
+        algorithm=algorithm,
+        format=format_,
+        algo_params=algo_params,
     )
 
     with patch("imagesearch.cli.command.Dupe") as mock_dupe:
@@ -40,8 +43,7 @@ def test_dupe_json_command(capsys) -> None:  # type: ignore
                         numpy.array([True, False, True, False])
                     ),
                     algorithm=algorithm,
-                    paths=set([Path("foo/bar/img.jpg"),
-                               Path("lol/123/img.jpg"), ]),
+                    paths=set([Path("foo/bar/img.jpg"), Path("lol/123/img.jpg"),]),
                 ),
             ]
         )
@@ -51,9 +53,7 @@ def test_dupe_json_command(capsys) -> None:  # type: ignore
 
         # verify
         mock_dupe.find.assert_called_once_with(
-            search_paths=search_paths,
-            algorithm=algorithm,
-            algo_params=algo_params
+            search_paths=search_paths, algorithm=algorithm, algo_params=algo_params
         )
 
     # verify json structure
@@ -94,7 +94,7 @@ def test_compare_json_command(capsys) -> None:  # type: ignore
     with patch("imagesearch.cli.command.ImageDiff") as mock_image_diff:
         # setup
         mock_image_diff.compare.return_value = iter(
-            [ImageDiff(path=Path("foo/bar/img.jpg"), diff=5), ]
+            [ImageDiff(path=Path("foo/bar/img.jpg"), diff=5),]
         )
 
         # run
@@ -133,10 +133,16 @@ def test_dupe_text_output(capsys) -> None:  # type: ignore
     format_ = Format.TEXT
 
     namespace = Namespace(
-        search_paths=search_paths, algorithm=algorithm, format=format_, algo_params=algo_params,
+        search_paths=search_paths,
+        algorithm=algorithm,
+        format=format_,
+        algo_params=algo_params,
     )
 
-    dupe_image_paths = [Path("foo/bar/img.jpg"), Path("lol/123/img.jpg"), ]
+    dupe_image_paths = [
+        Path("foo/bar/img.jpg"),
+        Path("lol/123/img.jpg"),
+    ]
 
     with patch("imagesearch.cli.command.Dupe") as mock_dupe:
         # setup
@@ -157,9 +163,7 @@ def test_dupe_text_output(capsys) -> None:  # type: ignore
 
         # verify
         mock_dupe.find.assert_called_once_with(
-            search_paths=search_paths,
-            algorithm=algorithm,
-            algo_params=algo_params,
+            search_paths=search_paths, algorithm=algorithm, algo_params=algo_params,
         )
 
     capout = capsys.readouterr().out
@@ -197,7 +201,7 @@ def test_compare_text_output(capsys) -> None:  # type: ignore
     with patch("imagesearch.cli.command.ImageDiff") as mock_image_diff:
         # setup
         mock_image_diff.compare.return_value = iter(
-            [ImageDiff(path=found_image_path, diff=5), ]
+            [ImageDiff(path=found_image_path, diff=5),]
         )
 
         # run

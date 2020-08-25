@@ -34,13 +34,10 @@ class ImageFingerprint:
         cls,
         path: Path,
         algorithm: Algorithm,
-        algo_params: Optional[Dict[str, Optional[Union[str, bool, int]]]] = None
+        algo_params: Optional[Dict[str, Optional[Union[str, bool, int]]]] = None,
     ) -> ImageFingerprint:
         """Create an ImageFingerprint from just a path (the hashing happens here)."""
-        image_hash = algorithm(
-            path=path,
-            algo_params=algo_params
-        )
+        image_hash = algorithm(path=path, algo_params=algo_params)
 
         return cls(path=path, image_hash=image_hash, algorithm=algorithm)
 
@@ -51,9 +48,7 @@ class ImageFingerprint:
 
     @classmethod
     def _walk_paths(
-        cls,
-        search_paths: Iterable[Path],
-        pbar: Optional[SearchProgressBar] = None,
+        cls, search_paths: Iterable[Path], pbar: Optional[SearchProgressBar] = None,
     ) -> List[_WalkedPath]:
         """
         Walk all paths in search_paths.
@@ -61,6 +56,7 @@ class ImageFingerprint:
         We return a list so the progress bar can know the length. Unfortunately, this puts all paths
         in memory.
         """
+
         def add_to_pbar() -> None:
             if pbar is not None:
                 pbar.add_to_total()
@@ -70,19 +66,21 @@ class ImageFingerprint:
         for search_path in search_paths:
 
             if search_path.is_file():
-                paths.append(ImageFingerprint._WalkedPath(
-                    path=search_path,
-                    from_dir_search=False
-                ))
+                paths.append(
+                    ImageFingerprint._WalkedPath(
+                        path=search_path, from_dir_search=False
+                    )
+                )
                 add_to_pbar()
 
             elif search_path.is_dir():
                 for child_path in search_path.rglob("*"):
                     if child_path.is_file():
-                        paths.append(ImageFingerprint._WalkedPath(
-                            path=child_path,
-                            from_dir_search=True
-                        ))
+                        paths.append(
+                            ImageFingerprint._WalkedPath(
+                                path=child_path, from_dir_search=True
+                            )
+                        )
                         add_to_pbar()
 
             else:

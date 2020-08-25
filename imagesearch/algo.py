@@ -21,6 +21,7 @@ from imagesearch.exceptions import (
 @attr.s(frozen=True, auto_attribs=True, order=False, kw_only=True)
 class AlgorithmParameter:
     """An argument to an imagehash algorithm call."""
+
     name: str
     default_value: Optional[Union[bool, str, int]]
     converter: Callable[[Any], Any]
@@ -42,7 +43,7 @@ class Algorithm(Enum):
                 name="hash_size",
                 default_value=8,
                 converter=int,
-                help="The number of bytes in the hash."
+                help="The number of bytes in the hash.",
             ),
         ],
     )
@@ -56,13 +57,13 @@ class Algorithm(Enum):
                 name="hash_size",
                 default_value=8,
                 converter=int,
-                help="The number of bytes in the hash."
+                help="The number of bytes in the hash.",
             ),
             AlgorithmParameter(
                 name="highfreq_factor",
                 default_value=4,
                 converter=int,
-                help="High frequency factor."
+                help="High frequency factor.",
             ),
         ],
     )
@@ -76,13 +77,13 @@ class Algorithm(Enum):
                 name="hash_size",
                 default_value=8,
                 converter=int,
-                help="The number of bytes in the hash."
+                help="The number of bytes in the hash.",
             ),
             AlgorithmParameter(
                 name="highfreq_factor",
                 default_value=4,
                 converter=int,
-                help="High frequency factor."
+                help="High frequency factor.",
             ),
         ],
     )
@@ -96,7 +97,7 @@ class Algorithm(Enum):
                 name="hash_size",
                 default_value=8,
                 converter=int,
-                help="The number of bytes in the hash."
+                help="The number of bytes in the hash.",
             ),
         ],
     )
@@ -110,7 +111,7 @@ class Algorithm(Enum):
                 name="hash_size",
                 default_value=8,
                 converter=int,
-                help="The number of bytes in the hash."
+                help="The number of bytes in the hash.",
             ),
         ],
     )
@@ -124,7 +125,7 @@ class Algorithm(Enum):
                 name="hash_size",
                 default_value=8,
                 converter=int,
-                help="The number of bytes in the hash."
+                help="The number of bytes in the hash.",
             ),
             # We could write a more custom converter for image_scale, but it's already tightly-
             # coupled to our custom algorithm argument parsing. In the meantime, we have the
@@ -137,13 +138,13 @@ class Algorithm(Enum):
                 Must be power of 2 and less than image size. If None (the default), image_scale is
                 set to max power of 2 for an input image. It's currently not possible to explicitly
                 set the value to None, so just omit it.
-                """.strip()
+                """.strip(),
             ),
             AlgorithmParameter(
                 name="mode",
                 default_value="haar",
                 converter=str,
-                help="The mode. Currently \"haar\" and \"db4\" are supported."
+                help='The mode. Currently "haar" and "db4" are supported.',
             ),
             AlgorithmParameter(
                 name="remove_max_haar_ll",
@@ -152,7 +153,7 @@ class Algorithm(Enum):
                 help="""
                 Remove the lowest low level (LL) frequency using Haar wavelet. TO SET TO FALSE, set
                 to a blank value, such as "remove_max_haar=".
-                """.strip()
+                """.strip(),
             ),
         ],
     )
@@ -166,7 +167,7 @@ class Algorithm(Enum):
                 name="binbits",
                 default_value=3,
                 converter=int,
-                help="The number of bits to use to encode each pixel fractions."
+                help="The number of bits to use to encode each pixel fractions.",
             ),
         ],
     )
@@ -187,7 +188,7 @@ class Algorithm(Enum):
         algo_name: str,
         method: Callable[..., imagehash.ImageHash],
         description: str,
-        params: List[AlgorithmParameter]
+        params: List[AlgorithmParameter],
     ):
         self.algo_name = algo_name
         self.method = method
@@ -197,7 +198,7 @@ class Algorithm(Enum):
     def __call__(
         self,
         path: Path,
-        algo_params: Optional[Mapping[str, Optional[Union[str, bool, int]]]] = None
+        algo_params: Optional[Mapping[str, Optional[Union[str, bool, int]]]] = None,
     ) -> imagehash.ImageHash:
         """
         Compute the visual fingerprint of image at path with an algorithm.
@@ -227,11 +228,9 @@ class Algorithm(Enum):
                 f"Path {path} is not a supported image format: {exc}"
             )
         except FileNotFoundError as exc:
-            raise DoesNotExistException(
-                f"Path {path} could not be found: {exc}")
+            raise DoesNotExistException(f"Path {path} could not be found: {exc}")
         except PermissionError as exc:
-            raise NotReadableException(
-                f"Could not open path {path} for reading: {exc}")
+            raise NotReadableException(f"Could not open path {path} for reading: {exc}")
         except IsADirectoryError as exc:
             raise NotReadableException(f"Path {path} is a directory: {exc}")
 

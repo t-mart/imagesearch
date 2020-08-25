@@ -13,9 +13,7 @@ class ImageSearchArgumentParser(argparse.ArgumentParser):
     """Arg parser with customized parsing and error handling."""
 
     def parse_args(
-        self,
-        args: Optional[Sequence[Text]] = None,
-        namespace=None,
+        self, args: Optional[Sequence[Text]] = None, namespace=None,
     ):
         parsed, _ = super().parse_known_args(args=args, namespace=namespace)
 
@@ -26,16 +24,14 @@ class ImageSearchArgumentParser(argparse.ArgumentParser):
 
         # using the algorithm, parse any override to the default algorithm call.
         parsed.algo_params = self._parse_algo_params(
-            params_str=parsed.algo_params,
-            algorithm=parsed.algorithm
+            params_str=parsed.algo_params, algorithm=parsed.algorithm
         )
 
         return parsed
 
     @staticmethod
     def _parse_algo_params(
-        params_str: str,
-        algorithm: Algorithm,
+        params_str: str, algorithm: Algorithm,
     ) -> Dict[str, Optional[Union[str, bool, int]]]:
         """
         Parse an argument string like
@@ -66,7 +62,7 @@ class ImageSearchArgumentParser(argparse.ArgumentParser):
 
             if name not in args_by_name:
                 raise BadAlgoParamsException(
-                    f"\"{name}\" is not an acceptable parameter name for algorithm "
+                    f'"{name}" is not an acceptable parameter name for algorithm '
                     f"{algorithm.algo_name}"
                 )
 
@@ -74,7 +70,7 @@ class ImageSearchArgumentParser(argparse.ArgumentParser):
                 converted_value = args_by_name[name].converter(value)
             except ValueError as exc:
                 raise BadAlgoParamsException(
-                    f"Value \"{value}\" of parameter \"{name}\" cannot be converted to the correct "
+                    f'Value "{value}" of parameter "{name}" cannot be converted to the correct '
                     f"type: {exc}"
                 )
 
@@ -95,10 +91,13 @@ def _add_algo_params_to_parser(parser: argparse.ArgumentParser) -> None:
     algo_group = parser.add_mutually_exclusive_group()
 
     for algo in list(Algorithm):
-        params_help = ", ".join(
-            f"{params.name} ({params.help} Default={params.default_value})"
-            for params in algo.params
-        ) + "."
+        params_help = (
+            ", ".join(
+                f"{params.name} ({params.help} Default={params.default_value})"
+                for params in algo.params
+            )
+            + "."
+        )
         algo_group.add_argument(
             f"--{algo.algo_name}",
             action="store_const",
@@ -106,7 +105,7 @@ def _add_algo_params_to_parser(parser: argparse.ArgumentParser) -> None:
             dest="algorithm",
             help=f"""
             {algo.description} Available parameters: {params_help}
-            """
+            """,
         )
 
     parser.add_argument(
@@ -118,7 +117,7 @@ def _add_algo_params_to_parser(parser: argparse.ArgumentParser) -> None:
         Provide additional parameters to the algorithms to modify how they run. Must be specified in
         the form "foo=1,bar=a_string". Commas are used to separate parameters. See help text for
         each algorithm to see available parameters.
-        """
+        """,
     )
 
 
@@ -149,10 +148,7 @@ PARSER = ImageSearchArgumentParser(
 
 PARSER.add_argument("--version", action="version", version=__version__)
 
-_SUBCOMMAND_PARSER = PARSER.add_subparsers(
-    dest="subcommand",
-    required=True,
-)
+_SUBCOMMAND_PARSER = PARSER.add_subparsers(dest="subcommand", required=True,)
 
 _DHASH_DEFAULT_STR = """
 The "dhash" algorithm is used if none is given.
@@ -163,9 +159,7 @@ Compares a reference image to other images and returns a measure of visual simil
 """
 
 _COMPARE_PARSER = _SUBCOMMAND_PARSER.add_parser(
-    "compare",
-    description=_COMPARE_DESC + " " + _DHASH_DEFAULT_STR,
-    help=_COMPARE_DESC,
+    "compare", description=_COMPARE_DESC + " " + _DHASH_DEFAULT_STR, help=_COMPARE_DESC,
 )
 
 _COMPARE_PARSER.add_argument(
@@ -225,9 +219,7 @@ Finds images which hash to the same value within the given paths.
 """
 
 _DUPE_PARSER = _SUBCOMMAND_PARSER.add_parser(
-    "dupe",
-    description=_DUPE_DESC + " " + _DHASH_DEFAULT_STR,
-    help=_DUPE_DESC,
+    "dupe", description=_DUPE_DESC + " " + _DHASH_DEFAULT_STR, help=_DUPE_DESC,
 )
 
 _DUPE_PARSER.add_argument(

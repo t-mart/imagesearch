@@ -27,10 +27,7 @@ from tests.fixtures import (
 def test_image_fingerprint_from_path() -> None:
     """Tests that an ImageFingerprint can be created from a path."""
     algorithm = Algorithm.DHASH
-    image_fingerprint = ImageFingerprint.from_path(
-        path=REF_IMAGE,
-        algorithm=algorithm,
-    )
+    image_fingerprint = ImageFingerprint.from_path(path=REF_IMAGE, algorithm=algorithm,)
 
     assert image_fingerprint.path == REF_IMAGE
     assert image_fingerprint.algorithm == algorithm
@@ -63,8 +60,7 @@ def test_image_fingerprint_recurse_paths_dir_and_other_file() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, IMAGE_NOT_IN_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(
-            search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == 1 + TEST_IMAGE_SUBDIR_1_1_IMAGE_COUNT
 
@@ -76,8 +72,7 @@ def test_image_fingerprint_recurse_paths_dir_and_child_file() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, IMAGE_IN_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(
-            search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == TEST_IMAGE_SUBDIR_1_1_IMAGE_COUNT
 
@@ -88,8 +83,7 @@ def test_image_fingerprint_recurse_paths_same_dir_twice() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, TEST_IMAGE_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(
-            search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == TEST_IMAGE_SUBDIR_1_1_IMAGE_COUNT
 
@@ -101,8 +95,7 @@ def test_image_fingerprint_recurse_paths_two_dirs() -> None:
     """
     paths = [TEST_IMAGE_SUBDIR_1_1, TEST_IMAGE_SUBDIR_1_0]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(
-            search_paths=paths, algorithm=Algorithm.DHASH)
+        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH)
     )
     assert (
         len(image_fingerprints)
@@ -117,8 +110,7 @@ def test_image_fingerprint_recurse_paths_two_files() -> None:
     """
     paths = [IMAGE_IN_SUBDIR_1_1, IMAGE_NOT_IN_SUBDIR_1_1]
     image_fingerprints = list(
-        ImageFingerprint.recurse_paths(
-            search_paths=paths, algorithm=Algorithm.DHASH,)
+        ImageFingerprint.recurse_paths(search_paths=paths, algorithm=Algorithm.DHASH,)
     )
     assert len(image_fingerprints) == 2
 

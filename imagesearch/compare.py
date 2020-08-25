@@ -54,15 +54,11 @@ class ImageDiff:
         cls._check_stop_on_first_match(stop_on_first_match, threshold)
 
         reference_fingerprint = ImageFingerprint.from_path(
-            path=ref_path,
-            algorithm=algorithm,
-            algo_params=algo_params,
+            path=ref_path, algorithm=algorithm, algo_params=algo_params,
         )
 
         for image_fingerprint in ImageFingerprint.recurse_paths(
-            search_paths=search_paths,
-            algorithm=algorithm,
-            algo_params=algo_params,
+            search_paths=search_paths, algorithm=algorithm, algo_params=algo_params,
         ):
             diff = image_fingerprint.image_hash - reference_fingerprint.image_hash
             if threshold is None or diff <= threshold:

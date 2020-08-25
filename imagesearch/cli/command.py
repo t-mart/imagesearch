@@ -75,8 +75,7 @@ class Command(Generic[ItemT], metaclass=_FakeGenericABCMeta):
         """Run the command, generating any items and output them to stdout."""
         items: Generator[ItemT, None, None] = cls._generate(args)
         format_function = cls.output_function_by_format(args.format)
-        sys.stdout.write(format_function(
-            args=args, items=items) + "\n")  # type: ignore
+        sys.stdout.write(format_function(args=args, items=items) + "\n")  # type: ignore
 
 
 class DupeCommand(Command[Dupe]):
@@ -132,8 +131,7 @@ class CompareCommand(Command[ImageDiff]):
                 "reference_path": str(args.ref_path.resolve()),
                 "algorithm": args.algorithm.algo_name,
                 "diffs": [
-                    {"diff": image_diff.diff, "path": str(
-                        image_diff.path.resolve())}
+                    {"diff": image_diff.diff, "path": str(image_diff.path.resolve())}
                     for image_diff in items
                 ],
             },
@@ -147,8 +145,7 @@ class CompareCommand(Command[ImageDiff]):
         """Outputs a text format string."""
         text_lines: List[str] = [str(args.ref_path.resolve())]
         for image_diff in items:
-            text_lines.append(
-                f"{image_diff.diff}\t{image_diff.path.resolve()}")
+            text_lines.append(f"{image_diff.diff}\t{image_diff.path.resolve()}")
         return "\n".join(text_lines)
 
     @classmethod

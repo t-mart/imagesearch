@@ -32,7 +32,8 @@ def test_subcommand_invalid() -> None:
 def test_parser_algo_params_not_given() -> None:
     """Tests that the algorithm argument parsing works when no argument is given."""
     default_algo_params_map = {
-        param.name: param.default_value for param in WHASH.params  # pylint: disable=no-member
+        param.name: param.default_value
+        for param in WHASH.params  # pylint: disable=no-member
     }
     args = [
         "dupe",
@@ -50,7 +51,8 @@ def test_parser_algo_params_not_given() -> None:
 def test_parser_algo_params_single() -> None:
     """Tests that the algorithm argument parsing works when a single argument is given."""
     default_algo_params_map = {
-        param.name: param.default_value for param in WHASH.params  # pylint: disable=no-member
+        param.name: param.default_value
+        for param in WHASH.params  # pylint: disable=no-member
     }
     args = [
         "dupe",
@@ -66,7 +68,10 @@ def test_parser_algo_params_single() -> None:
     assert algo_params["hash_size"] == 10
     assert algo_params["image_scale"] == default_algo_params_map["image_scale"]
     assert algo_params["mode"] == default_algo_params_map["mode"]
-    assert algo_params["remove_max_haar_ll"] == default_algo_params_map["remove_max_haar_ll"]
+    assert (
+        algo_params["remove_max_haar_ll"]
+        == default_algo_params_map["remove_max_haar_ll"]
+    )
 
 
 def test_parser_algo_params_nothing_is_false() -> None:
@@ -76,7 +81,8 @@ def test_parser_algo_params_nothing_is_false() -> None:
     to False.
     """
     default_algo_params_map = {
-        param.name: param.default_value for param in WHASH.params  # pylint: disable=no-member
+        param.name: param.default_value
+        for param in WHASH.params  # pylint: disable=no-member
     }
     args = [
         "dupe",

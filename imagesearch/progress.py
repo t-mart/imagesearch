@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 class SearchProgressBar(tqdm):
     """A manager for a tdqm progress bar."""
+
     files_hashed: int
     files_skipped: int
     last_file: Optional[Path]
@@ -58,7 +59,7 @@ class SearchProgressBar(tqdm):
             miniters=miniters,
             ascii=ascii,
             disable=disable,
-            unit=' files',
+            unit=" files",
             unit_scale=unit_scale,
             dynamic_ncols=dynamic_ncols,
             smoothing=smoothing,
@@ -86,8 +87,7 @@ class SearchProgressBar(tqdm):
     def to_dict(self) -> Dict[str, Union[str, int]]:
         """Returns a dictionary of key value pairs for this object"""
         prog_dict: Dict[str, Union[str, int]] = odict(
-            hashed=self.files_hashed,
-            skipped=self.files_skipped,
+            hashed=self.files_hashed, skipped=self.files_skipped,
         )
 
         if self.last_file is not None:

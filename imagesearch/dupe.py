@@ -32,9 +32,7 @@ class Dupe:
         hashes: Dict[ImageHash, Set[Path]] = defaultdict(set)
 
         for image_fingerprint in ImageFingerprint.recurse_paths(
-            search_paths=search_paths,
-            algorithm=algorithm,
-            algo_params=algo_params,
+            search_paths=search_paths, algorithm=algorithm, algo_params=algo_params,
         ):
             hashes[image_fingerprint.image_hash].add(image_fingerprint.path)
 
