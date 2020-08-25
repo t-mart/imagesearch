@@ -62,7 +62,7 @@ jobs:
 
     - name: Type check
       run: |
-        poetry run  mypy imagesearch tests
+        poetry run mypy imagesearch tests
 
     - name: Archive code coverage results
       # TODO this if statement is always evaluating to true
