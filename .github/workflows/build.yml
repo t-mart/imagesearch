@@ -33,7 +33,7 @@ jobs:
         path: |
           ${{ env.poetry-cache }}
           ${{ env.pip-cache }}
-        key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
+        key: ${{ runner.os }}-build-${{ hashFiles('poetry.lock') }}
         restore-keys: |
           ${{ runner.os }}-build-
           ${{ runner.os }}-
@@ -45,7 +45,7 @@ jobs:
     - name: Install project dependencies
       run: |
         poetry config cache-dir ${{ env.poetry-cache }}
-        poetry install
+        poetry install -vv
 
     - name: Unit test
       run: |
@@ -92,7 +92,7 @@ jobs:
         path: |
           ${{ env.poetry-cache }}
           ${{ env.pip-cache }}
-        key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
+        key: ${{ runner.os }}-build-${{ hashFiles('poetry.lock') }}
         restore-keys: |
           ${{ runner.os }}-build-
           ${{ runner.os }}-
@@ -104,7 +104,7 @@ jobs:
     - name: Install project dependencies
       run: |
         poetry config cache-dir ${{ env.poetry-cache }}
-        poetry install
+        poetry install -vv
 
     - name: Download coverage report
       uses: actions/download-artifact@v2
