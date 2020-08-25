@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     name: Build
-    
+
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -22,21 +22,23 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Retrieve cache dependencies
+    - name: Install system dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry config cache-dir .poetry_cache
+
+    - name: Retrieve project cache dependencies
       uses: actions/cache@v2
-      env:
-        cache-name: cache-node-modules
       with:
-        path: ~/.cache/pypoetry
+        path: .poetry_cache
         key: ${{ runner.os }}-build-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
-    - name: Install dependencies
+    - name: Install project dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install poetry
         poetry install
 
     - name: Unit test
