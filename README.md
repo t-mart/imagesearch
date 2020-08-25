@@ -190,10 +190,9 @@ See the subcommand help for more details and any constraints that may be on the 
   even help though? Is there harddisk read parallelism to leverage?
 - algorithm parameter parsing uses it's own little sublanguage (comma-separated key=value pairs).
   This could be a first-order argparse task instead. Would have to inspect each `Algorithm` and
-  auto-generate acceptable arguments. `argparse.ArgumentParser` has a nice `parse_known_args`
-  method that could chomp away at non-algorithm-specific arguments first, and then parse
-  algorithm-specific ones once the algorithm is known. How would we generate help text for this
-  though?
+  auto-generate acceptable arguments. There would have to be some work done to combine arguments
+  found with the same name from different algorithms (and hope that they're of the same type). Then,
+  you'd have to return an error if an argument is passed for an algorithm that doesn't accept it.
 
 ## Bug Fixes/Features
 
