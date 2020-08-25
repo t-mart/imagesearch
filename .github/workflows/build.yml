@@ -35,9 +35,21 @@ jobs:
         pip install poetry
         poetry install
 
-    - name: Test
+    - name: Unit test
       run: |
         poetry run pytest --cov=imagesearch
+
+    - name: Format check
+      run: |
+        poetry run black imagesearch tests --check
+
+    - name: Lint
+      run: |
+        poetry run pylint imagesearch tests -E
+
+    - name: Type check
+      run: |
+        poetry run  mypy imagesearch tests
 
     - name: Upload Coverage
       env:

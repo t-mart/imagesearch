@@ -12,9 +12,11 @@ from imagesearch.cli.command import DupeCommand, CompareCommand, Format
 class ImageSearchArgumentParser(argparse.ArgumentParser):
     """Arg parser with customized parsing and error handling."""
 
-    def parse_args(
-        self, args: Optional[Sequence[Text]] = None, namespace=None,
-    ):
+    def parse_args(  # type: ignore
+        self,
+        args: Optional[Sequence[Text]] = None,
+        namespace: Optional[argparse.Namespace] = None,
+    ) -> argparse.Namespace:
         parsed, _ = super().parse_known_args(args=args, namespace=namespace)
 
         # turn the algorithm name into one of the enumeration members of Algorithm

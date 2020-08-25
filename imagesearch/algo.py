@@ -235,6 +235,6 @@ class Algorithm(Enum):
             raise NotReadableException(f"Path {path} is a directory: {exc}")
 
         with ignore_pil_warnings():
-            # TODO, providing algo_params increases the surface area of exceptions we can expect. how
-            # should we handle these?
+            # TODO, providing algo_params increases the surface area of exceptions we can expect.
+            # how should we handle these?
             return self.method(image=image, **algo_params)

@@ -16,63 +16,14 @@ class SearchProgressBar(tqdm):
     last_file: Optional[Path]
     pbar: tqdm
 
-    def __init__(  # pylint: disable=too-many-arguments,too-many-locals
+    def __init__(
         self,
-        iterable=None,
-        desc=None,
-        # total=None,
-        leave=True,
-        file=None,
-        ncols=None,
-        # mininterval=0.1,
-        maxinterval=10.0,
-        miniters=None,
-        ascii=None,  # pylint: disable=redefined-builtin
-        disable=False,
-        # unit='it',
-        unit_scale=False,
-        dynamic_ncols=False,
-        smoothing=0.3,
-        bar_format=None,
-        initial=0,
-        position=None,
-        postfix=None,
-        unit_divisor=1000,
-        write_bytes=None,
-        lock_args=None,
-        nrows=None,
-        gui=False,
-        files_hashed=0,
-        files_skipped=0,
-        last_file=None,
-        **kwargs
+        files_hashed: int = 0,
+        files_skipped: int = 0,
+        last_file: Optional[Path] = None,
     ):
         super().__init__(
-            iterable=iterable,
-            desc=desc,
-            total=0,
-            leave=leave,
-            file=file,
-            ncols=ncols,
-            mininterval=1.0,
-            maxinterval=maxinterval,
-            miniters=miniters,
-            ascii=ascii,
-            disable=disable,
-            unit=" files",
-            unit_scale=unit_scale,
-            dynamic_ncols=dynamic_ncols,
-            smoothing=smoothing,
-            bar_format=bar_format,
-            initial=initial,
-            position=position,
-            postfix=postfix,
-            unit_divisor=unit_divisor,
-            write_bytes=write_bytes,
-            lock_args=lock_args,
-            nrows=nrows,
-            gui=gui,
-            **kwargs
+            total=0, mininterval=1.0, unit=" files",
         )
         self.files_hashed = files_hashed
         self.files_skipped = files_skipped

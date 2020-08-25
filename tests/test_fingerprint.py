@@ -1,6 +1,4 @@
 """Test the fingerprint module."""
-from unittest.mock import patch
-
 import pytest
 
 from imagesearch import Algorithm, ImageFingerprint
