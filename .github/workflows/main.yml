@@ -7,7 +7,7 @@ env:
 on:
   push:
   pull_request:
-  workflow_dispatch:
+  workflow_dispatch:  # allow manual runs
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        python: ["3.8"]
+        python: ["3.8"]  # expand this with more versions in the future
 
     steps:
       - name: Checkout code
@@ -34,10 +34,10 @@ jobs:
           path: |
             ${{ env.poetry-cache }}
             ${{ env.pip-cache }}
-          key: ${{ runner.os }}-build-${{ hashFiles('poetry.lock') }}
+          key: ${{ matrix.os }}-build-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ matrix.os }}-build-
+            ${{ matrix.os }}-
 
       - name: Install system dependencies
         run: |
@@ -48,9 +48,9 @@ jobs:
           poetry config cache-dir ${{ env.poetry-cache }}
           poetry install -v
 
-      - name: Unit test
+      - name: Unit test (with coverage)
         run: |
-          poetry run pytest --cov=imagesearch
+          poetry run pytest --cov=imagesearch --cov-report=xml
 
       - name: Format check
         run: |
@@ -64,16 +64,22 @@ jobs:
         run: |
           poetry run mypy imagesearch tests
 
-      - name: Archive code coverage results
-        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.8'
-        uses: actions/upload-artifact@v2
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v1
+        env:
+          OS: ${{ matrix.os }}
+          PYTHON: ${{ matrix.python }}
         with:
-          name: code-coverage-report-os-${{ matrix.os }}-python-${{ matrix.python }}-rev-${{ github.sha }}
-          path: .coverage
+          file: ./coverage.xml # optional
+          fail_ci_if_error: true
 
+  # after all oses/pythons' tests have completed, deploy the project if necessary
   deploy:
     name: Deploy
     needs: build
+    # only do this step if the ref is a tag whose name starts with "v", like "v1.2.3"
+    # this is weak, and could lead to false positives.
+    if: startswith(github.ref, 'refs/tags/v')
 
     runs-on: ubuntu-latest
 
@@ -106,19 +112,7 @@ jobs:
           poetry config cache-dir ${{ env.poetry-cache }}
           poetry install -v
 
-      - name: Download coverage report
-        uses: actions/download-artifact@v2
-        with:
-          name: code-coverage-report-os-ubuntu-latest-python-3.8-rev-${{ github.sha }}
-
-      - name: Upload coverage
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: |
-          poetry run coveralls
-
       - name: Create GH release
-        if: startswith(github.ref, 'refs/tags/v')
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -132,7 +126,6 @@ jobs:
           prerelease: false
 
       - name: Publish to PyPI
-        if: startswith(github.ref, 'refs/tags/v')
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
