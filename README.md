@@ -21,7 +21,9 @@ can be used to identify images which you can delete later.
 
 ## Installation
 
-    pip install imagesearch
+```shell
+> pip install imagesearch
+```
 
 See [imagesearch on PyPI](https://pypi.org/project/imagesearch/).
 
@@ -29,8 +31,10 @@ See [imagesearch on PyPI](https://pypi.org/project/imagesearch/).
 
 - Get help:
 
-        > imagesearch --help
-        ...
+  ```shell
+  > imagesearch --help
+  ...
+  ```
 
 ## Commands
 
@@ -46,7 +50,7 @@ While the subcommands may have unique arguments, others are common among them:
     output for what these parameters are. They should be given in a comma-separated list, joining
     each parameter name to its value with an equals sign. For example:
 
-    ```
+    ```shell
     > imagesearch dupe images/ --whash --algo-params hash_size=8,mode=db4
     > imagesearch dupe --help  # for more info and value constraints
     ```
@@ -62,64 +66,80 @@ While the subcommands may have unique arguments, others are common among them:
 
 - Compare a reference image to all images in a search path:
 
-        > imagesearch search needle.jpg haystack\ --format text
-        28      haystack\0.jpg
-        38      haystack\1.jpg
-        12      haystack\2.jpg
-        18      haystack\3.jpg
-        32      haystack\4.jpg
-        29      haystack\5.jpg
-        0       haystack\6.jpg
-        29      haystack\7.jpg
-        5       haystack\8.jpg
-        28      haystack\9.jpg
+  ```shell
+  > imagesearch search needle.jpg haystack\ --format text
+  28      haystack\0.jpg
+  38      haystack\1.jpg
+  12      haystack\2.jpg
+  18      haystack\3.jpg
+  32      haystack\4.jpg
+  29      haystack\5.jpg
+  0       haystack\6.jpg
+  29      haystack\7.jpg
+  5       haystack\8.jpg
+  28      haystack\9.jpg
+  ```
 
     In this example, `haystack\6.jpg` is most similar.
 
 - Compare against a single image:
 
-        > imagesearch search needle.jpg haystack\1.jpg --format text
-        38       haystack\1.jpg
+  ```shell
+  > imagesearch search needle.jpg haystack\1.jpg --format text
+  38       haystack\1.jpg
+  ```
 
 - Only return images with similarity less than or equal to 10:
 
-        > imagesearch search needle.jpg haystack\ --threshold 10 --format text
-        0       haystack\6.jpg
-        5       haystack\8.jpg
+  ```shell
+  > imagesearch search needle.jpg haystack\ --threshold 10 --format text
+  0       haystack\6.jpg
+  5       haystack\8.jpg
+  ```
 
 - Return the first image found under the threshold (0, in this case) and stop searching immediately:
 
-        > imagesearch search needle.jpg haystack\ -t 0 --stop-on-first-match --format text
-        0       haystack\6.jpg
+  ```shell
+  > imagesearch search needle.jpg haystack\ -t 0 --stop-on-first-match --format text
+  0       haystack\6.jpg
+  ```
 
 - Specify a different algorithm:
 
-        > imagesearch search needle.jpg haystack\ --colorhash --format text
-        ...
+  ```shell
+  > imagesearch search needle.jpg haystack\ --colorhash --format text
+  ...
+  ```
 
 - Get more help:
 
-        > imagesearch search --help
-        ...
+  ```shell
+  > imagesearch search --help
+  ...
+  ```
 
 ### `dupe` Command
 
 - Find all visually similar images in a search path:
 
-        > imagesearch dupe images\ --format text
-        fff7db9f03030203
-                images\file-123.jpg
-                images\deep\subdir\foo.jpeg
-        fcf8f0fae2c6c400
-                images\a\file-987.jpg
-                images\subdir\bar.png
+  ```shell
+  > imagesearch dupe images\ --format text
+  fff7db9f03030203
+          images\file-123.jpg
+          images\deep\subdir\foo.jpeg
+  fcf8f0fae2c6c400
+          images\a\file-987.jpg
+          images\subdir\bar.png
+  ```
 
     Each set of paths that are similar is prefixed with its hash.
 
 - Get more help:
 
-        > imagesearch dupe --help
-        ...
+  ```shell
+  > imagesearch dupe --help
+  ...
+  ```
 
 ## Visual Similiarity
 
@@ -151,11 +171,13 @@ algorithm to use by giving an argument in one of the following forms:
 - `--colorhash`: HSV color hashing (colorhash)
 
 ## Collisions
+
 These algorithms trade away accuracy for speed and size, usually with acceptable results. Instead of
 producing an artifact that exactly identifies an image, there's analysis done on some more abstract
 quality of the image, such as it's luminance or
 [signal frequency](https://en.wikipedia.org/wiki/Discrete_cosine_transform). This allows us
 to:
+
 - do less processing
 - get a fingerprint with a small size
 - get a fingerprint that exists in a linear space for comparison
@@ -173,18 +195,19 @@ produce the same fingerprint. The source code of that project also references ot
 explain the workings of the algorithm.
 
 ### Tuning
+
 If you notice collisions for images you expect to hash differently, try changing the algorithm
 parameters. One easy way to do this is to increase the hash size, done for example by:
 
-```
+```shell
 imagesearch dupe images/ --dhash --algo-params hash_size=16
 ```
 
 See the subcommand help for more details and any constraints that may be on the value.
 
-# Contributing
+## Contributing
 
-## Features TODO
+### Features TODO
 
 - whitelist file paths by extension (currently tries to open every file in the path, which
   hurts for directories with other big files in them. Not sure if `PIL.Image.open` is smart enough
@@ -197,15 +220,14 @@ See the subcommand help for more details and any constraints that may be on the 
   auto-generate acceptable arguments. There would have to be some work done to combine arguments
   found with the same name from different algorithms (and hope that they're of the same type). Then,
   you'd have to return an error if an argument is passed for an algorithm that doesn't accept it.
-- consider https://codecov.io/ for coverage instead of coveralls
-- workflow_dispatch for manual GH actions runs
-- clean up GH actions, see good reference https://github.com/python-attrs/attrs/blob/master/.github/workflows/main.yml
+- consider <https://codecov.io/> for coverage instead of coveralls
+- clean up GH actions, see good reference <https://github.com/python-attrs/attrs/blob/master/.github/workflows/main.yml>
 
-## Bug Fixes/Features
+### Bug Fixes/Features
 
 Submit a PR from an appropriately named feature branch off of master.
 
-## Releasing
+### Releasing
 
 1. Bump the version with `poetry run bumpversion [patch|minor|major]`. This will update the version
 number around the project, commit and tag it.

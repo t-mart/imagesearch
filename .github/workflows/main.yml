@@ -17,60 +17,59 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        python: ['3.8']
+        python: ["3.8"]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python }}
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
 
-    - name: Retrieve project cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          ${{ env.poetry-cache }}
-          ${{ env.pip-cache }}
-        key: ${{ runner.os }}-build-${{ hashFiles('poetry.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+      - name: Retrieve project cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.poetry-cache }}
+            ${{ env.pip-cache }}
+          key: ${{ runner.os }}-build-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-    - name: Install system dependencies
-      run: |
-        python -m pip install --cache-dir ${{ env.pip-cache }} --upgrade pip poetry
+      - name: Install system dependencies
+        run: |
+          python -m pip install --cache-dir ${{ env.pip-cache }} --upgrade pip poetry
 
-    - name: Install project dependencies
-      run: |
-        poetry config cache-dir ${{ env.poetry-cache }}
-        poetry install -v
+      - name: Install project dependencies
+        run: |
+          poetry config cache-dir ${{ env.poetry-cache }}
+          poetry install -v
 
-    - name: Unit test
-      run: |
-        poetry run pytest --cov=imagesearch
+      - name: Unit test
+        run: |
+          poetry run pytest --cov=imagesearch
 
-    - name: Format check
-      run: |
-        poetry run black imagesearch tests --check
+      - name: Format check
+        run: |
+          poetry run black imagesearch tests --check
 
-    - name: Lint
-      run: |
-        poetry run pylint imagesearch tests -E
+      - name: Lint
+        run: |
+          poetry run pylint imagesearch tests -E
 
-    - name: Type check
-      run: |
-        poetry run mypy imagesearch tests
+      - name: Type check
+        run: |
+          poetry run mypy imagesearch tests
 
-    - name: Archive code coverage results
-      # TODO this if statement is always evaluating to true
-      if: matrix.os == 'ubuntu-latest' && matrix.python == '3.8'
-      uses: actions/upload-artifact@v2
-      with:
-        name: code-coverage-report-os-${{ matrix.os }}-python-${{ matrix.python }}-rev-${{ github.sha }}
-        path: .coverage
+      - name: Archive code coverage results
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.8'
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report-os-${{ matrix.os }}-python-${{ matrix.python }}-rev-${{ github.sha }}
+          path: .coverage
 
   deploy:
     name: Deploy
@@ -79,65 +78,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
 
-    - name: Retrieve project cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          ${{ env.poetry-cache }}
-          ${{ env.pip-cache }}
-        key: ${{ runner.os }}-build-${{ hashFiles('poetry.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+      - name: Retrieve project cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.poetry-cache }}
+            ${{ env.pip-cache }}
+          key: ${{ runner.os }}-build-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-    - name: Install system dependencies
-      run: |
-        python -m pip install --cache-dir ${{ env.pip-cache }} --upgrade pip poetry
+      - name: Install system dependencies
+        run: |
+          python -m pip install --cache-dir ${{ env.pip-cache }} --upgrade pip poetry
 
-    - name: Install project dependencies
-      run: |
-        poetry config cache-dir ${{ env.poetry-cache }}
-        poetry install -v
+      - name: Install project dependencies
+        run: |
+          poetry config cache-dir ${{ env.poetry-cache }}
+          poetry install -v
 
-    - name: Download coverage report
-      uses: actions/download-artifact@v2
-      with:
-        name: code-coverage-report-os-ubuntu-latest-python-3.8-rev-${{ github.sha }}
+      - name: Download coverage report
+        uses: actions/download-artifact@v2
+        with:
+          name: code-coverage-report-os-ubuntu-latest-python-3.8-rev-${{ github.sha }}
 
-    - name: Upload coverage
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: |
-        poetry run coveralls
+      - name: Upload coverage
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          poetry run coveralls
 
-    - name: Create GH release
-      if: startswith(github.ref, 'refs/tags/v')
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          Release of 0.4.2
-        # the above line is updated automatically with bumpversion. do not change it!
-        draft: false
-        prerelease: false
+      - name: Create GH release
+        if: startswith(github.ref, 'refs/tags/v')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Release of 0.4.2
+          # the above line is updated automatically with bumpversion. do not change it!
+          draft: false
+          prerelease: false
 
-    - name: Publish to PyPI
-      if: startswith(github.ref, 'refs/tags/v')
-      env:
-        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      run: |
-        poetry config pypi-token.pypi $PYPI_TOKEN
-        poetry publish --build
-
-
+      - name: Publish to PyPI
+        if: startswith(github.ref, 'refs/tags/v')
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          poetry publish --build
